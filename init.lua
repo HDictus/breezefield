@@ -7,6 +7,7 @@ Collider.__index = Collider
 
 function Collider.new(world, collider_type, ...)
    local o = {}
+   local args = {...}
    -- note that you will need to set static vs dynamic later
    if collider_type == 'Circle' then
       o.body = phys.newBody(args[1], args[2], "dynamic")
