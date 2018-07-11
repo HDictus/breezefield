@@ -1,0 +1,32 @@
+local bf = {}
+
+phys = love.physics
+
+Collider = {}
+Collider.__index = Collider
+
+function Collider.new(world, collider_type, ...)
+   local o = {}
+   -- note that you will need to set static vs dynamic later
+   if collider_type == 'Circle' then
+      self.body = phys.newBody(args[1], args[2], "dynamic")
+      self.shape = phys.newCircleShape(...)
+   elseif collider_type == "Polygon" then
+      self.body = phys.newBody(0, 0, "dynamic")
+      self.shape = phys.newPo
+end
+
+
+function set_funcs(Collider, subobject)
+   for k, v in pairs(subobject.__index) do
+      if k ~= '__gc' and k ~= '__eq' and k ~= '__index' and k ~= '__tostring' and k ~= 'destroy' and k ~= 'type' and k ~= 'typeOf' then
+	 self[k] = function(self, ...)
+	    return v(subobject, ...)
+	 end
+      end
+   end
+end
+
+bf.Collider = Collider
+
+return bf

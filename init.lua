@@ -8,8 +8,10 @@ Collider.__index = Collider
 function Collider.new(world, collider_type, ...)
    local o = {}
    local args = {...}
+
    -- note that you will need to set static vs dynamic later
    if collider_type == 'Circle' then
+      print(args[1], args[2])
       o.body = phys.newBody(world._physworld, args[1], args[2], "dynamic")
       o.shape = phys.newCircleShape(...)
    elseif collider_type == "Polygon" then
@@ -17,7 +19,8 @@ function Collider.new(world, collider_type, ...)
       o.shape = phys.newPolygonShape(...)
    end
    -- that's all I need for now
-   o.fixture = phys.newFixture(o.body, o.shape)
+   o.fixture = phys.newFixture(o.body, o.shape, 1)
+   o.fixture:setUserData(o)
    set_funcs(o, o.body)
    set_funcs(o, o.shape)
    set_funcs(o, o.fixture)
