@@ -10,10 +10,10 @@ function Collider.new(world, collider_type, ...)
    local args = {...}
    -- note that you will need to set static vs dynamic later
    if collider_type == 'Circle' then
-      o.body = phys.newBody(args[1], args[2], "dynamic")
+      o.body = phys.newBody(world._physworld, args[1], args[2], "dynamic")
       o.shape = phys.newCircleShape(...)
    elseif collider_type == "Polygon" then
-      o.body = phys.newBody(0, 0, "dynamic")
+      o.body = phys.newBody(world._physworld, 0, 0, "dynamic")
       o.shape = phys.newPolygonShape(...)
    end
    -- that's all I need for now
