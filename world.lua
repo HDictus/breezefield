@@ -8,6 +8,8 @@
    or for beginContact if the colliders are sensors
 --]]
 
+Math = require('mlib/mlib')
+
 
 local World = {}
 World.__index = World
@@ -68,7 +70,48 @@ function World:sensor_collision(a, b, ...)
    local objb = b:getMetaData(b)
    if obja:isSensor() or objb:isSensor() then
       collide(obja, objb, ...)
+   end
+end
+
+-- TODO implement queryPolygonArea
+
+function World:queryRectangleArea(x1, y1, x2, y2)
+   local colls = {}
+   local callback = function(fixture)
+      table.insert(colls, fixture:getUserData())
+   end
+   self:queryBoundingBox(x1, y1, x2, y2, callback)
+   return colls
+end
+
+function World:queryCircleArea(x, y, r)
+   -- get all colliders in a circle are
+   local maxx = x + r
+   local minx = x - r
+   local maxy = y + r
+   local miny = y - r
+   local colls = self:queryRectangleArea(minx, miny,
+					 maxx, maxy)
+   -- NOTE for now use handy mlib functions, but maybe change later
+   -- they are a little overkill
+   -- ooh maybe take the chance to embed some c?
+   for i, c in ipairs(colls) do
+      local isin = false
+      if c.collider_type == 'Circle' then
+	 isin = 
+	    Math.circle.getCircleIntersection(x, y, r, c:getX(),
+					      c:getY(), c:getRadius())
+      elseif c.collider_type == 'Polygon' then
+	 isin =
+	    Math.polygon.getCircleIntersection(
+	       x, y, r,
+	       {c:getWorldPoints(c:getPoints())})   
+      else
+	 error('unexpected collider type')
+      end
+      if not isin then table.remove(colls, i) end
+   end
 end
 
 return World
-  
+

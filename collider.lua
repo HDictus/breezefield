@@ -4,7 +4,7 @@ Collider.__index = Collider
 function Collider.new(world, collider_type, ...)
    local o = {}
    local args = {...}
-
+   setmetatable(o, Collider)
    -- note that you will need to set static vs dynamic later
    if collider_type == 'Circle' then
       print(args[1], args[2])

@@ -27,6 +27,10 @@ end
 local Collider = require('collider')
 local World = require('world')
 
+function bf.newWorld(...)
+   return bf.World:new(...)
+end
+
 bf.Collider = Collider
 bf.World = World
 
