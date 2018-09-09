@@ -7,6 +7,8 @@
    by default, calls :collide on any colliders in it for postSolve
    or for beginContact if the colliders are sensors
 --]]
+-- TODO make updating work from here too
+local phys=love.physics
 
 Math = require('mlib/mlib')
 
@@ -21,7 +23,7 @@ function World:new(...)
    w._physworld = phys.newWorld(...)
    set_funcs(w, w._physworld)
    w.colliders = {}
-   w:setCallbacks(W.sensor_collision, nil, nil, W.collision)
+   w:setCallbacks(w.sensor_collision, nil, nil, w.collision)
    return w
 end
 
@@ -78,9 +80,11 @@ end
 function World:queryRectangleArea(x1, y1, x2, y2)
    local colls = {}
    local callback = function(fixture)
+      print(fixture)
       table.insert(colls, fixture:getUserData())
    end
    self:queryBoundingBox(x1, y1, x2, y2, callback)
+   print(x1, y1, x2, y2)
    return colls
 end
 
@@ -95,7 +99,9 @@ function World:queryCircleArea(x, y, r)
    -- NOTE for now use handy mlib functions, but maybe change later
    -- they are a little overkill
    -- ooh maybe take the chance to embed some c?
+   print(#colls)
    for i, c in ipairs(colls) do
+      print(i, getmetatable(c) == standard_bullet)
       local isin = false
       if c.collider_type == 'Circle' then
 	 isin = 
@@ -109,8 +115,10 @@ function World:queryCircleArea(x, y, r)
       else
 	 error('unexpected collider type')
       end
+      print(isin)
       if not isin then table.remove(colls, i) end
    end
+   return colls
 end
 
 return World

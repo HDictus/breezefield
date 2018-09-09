@@ -23,9 +23,9 @@ function set_funcs(collider, subobject)
    end
 end
 
-
-local Collider = require('collider')
-local World = require('world')
+--TODO how to just get collider, but only local collider
+local Collider = require('breezefield/collider')
+local World = require('breezefield/world')
 
 function bf.newWorld(...)
    return bf.World:new(...)
