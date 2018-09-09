@@ -59,4 +59,11 @@ function Collider:draw()
    self.__draw__()
 end
 
+function Collider:delete()
+   self.body:delete()
+   self.body:release()
+   self.shape:release()
+   self.fixture:release()
+end
+
 return Collider
