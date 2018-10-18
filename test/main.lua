@@ -27,12 +27,13 @@ end
 
 
 function love.draw()
-   love.graphics.setColor(0.28, 0.63, 0.05)
-   love.graphics.polygon("fill", objects.ground:getWorldPoints(objects.ground:getPoints()))
-   love.graphics.setColor(0.76, 0.18, 0.05) --set the drawing color to red for the ball
-  love.graphics.circle("fill", objects.ball:getX(), objects.ball:getY(), objects.ball:getRadius())
- 
-  love.graphics.setColor(0.20, 0.20, 0.20) -- set the drawing color to grey for the blocks
-  love.graphics.polygon("fill", objects.block1:getWorldPoints(objects.block1:getPoints()))
+   world:draw()
+   --  love.graphics.setColor(0.28, 0.63, 0.05)
+   --  love.graphics.polygon("fill", objects.ground:getWorldPoints(objects.ground:getPoints()))
+   --  love.graphics.setColor(0.76, 0.18, 0.05) --set the drawing color to red for the ball
+   -- love.graphics.circle("fill", objects.ball:getX(), objects.ball:getY(), objects.ball:getRadius())
+   
+   -- love.graphics.setColor(0.20, 0.20, 0.20) -- set the drawing color to grey for the blocks
+   -- love.graphics.polygon("fill", objects.block1:getWorldPoints(objects.block1:getPoints()))
 
 end

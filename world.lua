@@ -15,7 +15,6 @@ Math = require('mlib/mlib')
 
 local World = {}
 World.__index = World
-
 function World:new(...)
    
    local w = {}
@@ -57,19 +56,19 @@ local function collide(obja, objb, ...)
 end
 
 function World.collision(a, b, ...)
-   -- objects that hit one another can have collude methods
+   -- objects that hit one another can have collide methods
    -- by default used as postSolve callback
-   local obja = a:getMetaData(a)
-   local objb = b:getMetaData(b)
+   local obja = a:getUserData(a)
+   local objb = b:getUserData(b)
    collide(obja, objb, ...)
 end
 
 
-function World:sensor_collision(a, b, ...)
+function World.sensor_collision(a, b, ...)
    -- because sensor collision methods aren't called otherwise
    -- by default used as enter: callback
-   local obja = a:getMetaData(a)
-   local objb = b:getMetaData(b)
+   local obja = a:getUserData(a)
+   local objb = b:getUserData(b)
    if obja:isSensor() or objb:isSensor() then
       collide(obja, objb, ...)
    end
