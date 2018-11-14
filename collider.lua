@@ -41,6 +41,7 @@ function Collider.new(world, collider_type, ...)
    set_funcs(o, o.fixture)
 
    -- index by self for now
+   o._world = world
    world.colliders[o] = o
    return o
 end
@@ -53,17 +54,20 @@ function Collider:__draw__()
       love.graphics.polygon(mode, self:getWorldPoints(self:getPoints()))
    end
 end
-   
 
 function Collider:draw()
-   self.__draw__()
+   self:__draw__()
 end
 
-function Collider:delete()
-   self.body:delete()
-   self.body:release()
-   self.shape:release()
-   self.fixture:release()
+
+function Collider:destroy()
+   self._world.colliders[self] = nil
+   self.fixture:setUserData(nil)
+   self.fixture:destroy()
+   self.body:destroy()
+   -- for k, v in pairs(self) do
+   --    self[k] = nil
+   -- end
 end
 
 return Collider

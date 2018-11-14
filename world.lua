@@ -33,10 +33,10 @@ function World:draw(alpha, draw_over)
       draw_over: draws the collision objects shapes even if their 
                 .draw method is overwritten
    --]]
-   love.graphics.setColor(1, 1, 1, alpha or 1)
    for _, c in pairs(self.colliders) do
-      c:draw()
-      if draw_over() then
+      c:draw(alpha)
+      if draw_over then
+	 love.graphics.setColor(1, 1, 1, alpha or 1)
 	 c:__draw__()
       end
    end
@@ -46,12 +46,13 @@ end
 
 -- little utility function
 local function collide(obja, objb, ...)
-   if obja.collide ~= nil then
-      obja:collide(objb, ...)
-   end
-   if objb.collide ~= nil and not
-   (obja:isDestroyed() or objb:isDestroyed()) then
-      objb:collide(obja, ...)
+   if obja ~= nil and objb ~= nil then
+      if obja.collide ~= nil then
+	 obja:collide(objb, ...)
+      end
+      if objb.collide ~= nil then
+	 objb:collide(obja, ...)
+      end
    end
 end
 
@@ -79,11 +80,10 @@ end
 function World:queryRectangleArea(x1, y1, x2, y2)
    local colls = {}
    local callback = function(fixture)
-      print(fixture)
       table.insert(colls, fixture:getUserData())
+      return true
    end
    self:queryBoundingBox(x1, y1, x2, y2, callback)
-   print(x1, y1, x2, y2)
    return colls
 end
 
@@ -98,9 +98,7 @@ function World:queryCircleArea(x, y, r)
    -- NOTE for now use handy mlib functions, but maybe change later
    -- they are a little overkill
    -- ooh maybe take the chance to embed some c?
-   print(#colls)
    for i, c in ipairs(colls) do
-      print(i, getmetatable(c) == standard_bullet)
       local isin = false
       if c.collider_type == 'Circle' then
 	 isin = 
@@ -114,7 +112,7 @@ function World:queryCircleArea(x, y, r)
       else
 	 error('unexpected collider type')
       end
-      print(isin)
+
       if not isin then table.remove(colls, i) end
    end
    return colls
