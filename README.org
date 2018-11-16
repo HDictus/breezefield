@@ -1,0 +1,74 @@
+#+TITLE Breezefield: a lightweight windfield alternative
+
+#+TOC: headlines 2
+
+* introduction
+# TODO sound less like you're dissing windfield
+** why breezefield?
+   The love physics library is very flexible, but doing relatively simple
+   things with it can be tedious. A good solution is the [[https://github.com/adnzzzzZ/windfield][windfield]] library,
+   but a few things didn't quite sit right for me.
+    
+   I've used windfield for a few practice projects, and in general I can 
+   reccommend it. It makes protoyping faster, and massively reduces the time
+   and mental effort spent putting together all the pieces of love.physics.
+   so far however, I've encountered the occaisinal issue that was tricky to
+   track down due to (in particular) the collision-management system in place
+   in windfield. When I needed to modify parts of it to my purposes, 
+   I found its size and complexity made it take a little longer than it could
+   have with a simpler library.
+    
+   breezefield is a lightweight alternative that takes the parts that I 
+   liked best about windfield and leaves out what I felt held it back.
+
+
+* functionality
+** easily create physics objects (body + shape + fixture)
+  #+BEGIN_SRC lua
+  bf.Collider.new()
+  #+END_SRC 
+** query rectangle and circle area
+  #+BEGIN_SRC lua
+  world:queryRectangleArea(x1, y1, x2, y2)
+  #+END_SRC 
+** love.physics.<object> methods mapped to breezefield objects
+  #+BEGIN_SRC lua
+  Collider:<methodname> (e.g. get/setRestitution, get/setX, etc...)
+  World:<methodname> (e.g. update)
+  #+END_SRC 
+** draw physics objects with one command
+  #+BEGIN_SRC lua
+  world:draw()
+  #+END_SRC 
+*** can be repurposed to draw in-game shapes/sprites!
+  just redefine :draw on your collider objects, 
+  add other objects with :draw methods to world.colliders
+  call world:draw(<alpha>, true) to draw physics boundaries in addition to
+  self-defined :draw methods
+** simple collision system
+   
+** access to love.physics objects if you have something more creative in mind
+   World._physworld contains the regular love.physics.world object
+   Collider.fixture, Collider.body, Collider.shape all contain the 
+   respective physics objects
+*** please let me know if there are any issues 
+    if there are any issues in breezefields implementation that complicates using
+    love.physics together with it, let me know, or better yet, send a pull request
+
+* TODO example/tutorial
+
+
+* future
+
+  ideas for future features of breezefield
+** make it possible to use either love.physics or HC as a backend 
+   (is this worth it?)
+*** implement some 'translation' of love.physics commands to HC and vice versa
+** add more shapes
+** queryPolygonArea
+** world:newBlahBlahCollider to make switching from windfield to breezefield easier
+** add features for working with filterData
+** a workaround for box2d callback hangups
+*** return a function to run after collisions!
+
+** rename collide to be specific?
