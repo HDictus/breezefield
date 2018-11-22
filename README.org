@@ -68,7 +68,5 @@
 ** queryPolygonArea
 ** world:newBlahBlahCollider to make switching from windfield to breezefield easier
 ** add features for working with filterData
-** a workaround for box2d callback hangups
-*** return a function to run after collisions!
+** use :enter, :pre, :post, :exit instead of just :collide
 
-** rename collide to be specific?
