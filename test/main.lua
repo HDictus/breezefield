@@ -15,7 +15,6 @@ function love.load()
 					       250, 425, 150, 425})
    little_ball.new(
       love.math.random(love.graphics.getWidth()), 0)
-
    
    function ball:collide(other)
       if other == block1 then
