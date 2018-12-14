@@ -77,6 +77,7 @@ function World:draw(alpha, draw_over)
                 .draw method is overwritten
    --]]
    for _, c in pairs(self.colliders) do
+      love.graphics.setColor(1, 1, 1, alpha or 1)
       c:draw(alpha)
       if draw_over then
 	 love.graphics.setColor(1, 1, 1, alpha or 1)

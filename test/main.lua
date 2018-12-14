@@ -16,8 +16,8 @@ function love.load()
       love.math.random(love.graphics.getWidth()), 0)
 
    tri = bf.Collider.new(world, "Polygon", {400, 400, 450, 400, 425, 356.7})
-   tri:setGroupIndex(-1)
-   ball:setGroupIndex(-1)
+   -- tri:setGroupIndex(-1)
+   -- ball:setGroupIndex(-1)
    function ball:postSolve(other)
       if other == block1 then
 	 -- creating Collder.new should never be called inside a callback
@@ -27,7 +27,7 @@ function love.load()
       end
    end
 
-   function ball:postSolve(other)
+   function ball:enter(other)
       if other == tri then
 	 self:setLinearVelocity(0, -200)
       end
@@ -73,6 +73,7 @@ function love.mousepressed()
 end
 
 little_ball = {}
+little_ball.__index = little_ball
 
 function spawn_random_ball()
    little_ball.new(love.math.random(love.graphics.getWidth()), 0)
@@ -80,7 +81,12 @@ end
 
 function little_ball.new(x, y)
    local n = bf.Collider.new(world, 'Circle', x, y, 5)
-   n.identity = little_ball
+   setmetatable(n, little_ball)
    return n
 end
 
+function little_ball:draw(alpha)
+   love.graphics.setColor(0.9, 0.9, 0.0)
+   love.graphics.circle('fill', self:getX(), self:getY(), self:getRadius())
+end
+      

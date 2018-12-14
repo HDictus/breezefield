@@ -75,7 +75,7 @@
 **** collider:getIgnores()
 **** collider:getCollides()
 **** collider:clearCollides() -- reset to default
-**** define _collider_class to some value (e.g. table used to generate instances)
+**** define identity to some value (e.g. table used to generate instances)
 ***** if specific table is not set to ignore or collides, check if _collider_class is set to Ignore
 *** idea 2: interface to setFilterData/setMask/setCategory/setGroupIndex
 **** wrap them to accept list of integers, converting to 16 bit int and passing through
