@@ -68,5 +68,6 @@
 ** queryPolygonArea
 ** world:newBlahBlahCollider to make switching from windfield to breezefield easier
 ** add features for working with filterData
-** use :enter, :pre, :post, :exit instead of just :collide
 
+
+   

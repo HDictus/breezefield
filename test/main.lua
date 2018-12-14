@@ -14,14 +14,24 @@ function love.load()
 					       250, 425, 150, 425})
    little_ball.new(
       love.math.random(love.graphics.getWidth()), 0)
-   
-   function ball:collide(other)
+
+   tri = bf.Collider.new(world, "Polygon", {400, 400, 450, 400, 425, 356.7})
+   tri:setGroupIndex(-1)
+   ball:setGroupIndex(-1)
+   function ball:postSolve(other)
       if other == block1 then
 	 -- creating Collder.new should never be called inside a callback
 	 -- a limitation of (box2d)
 	 -- instead, return a function to be called during update()
 	 return spawn_random_ball
       end
+   end
+
+   function ball:postSolve(other)
+      if other == tri then
+	 self:setLinearVelocity(0, -200)
+      end
+      return
    end
 
 end

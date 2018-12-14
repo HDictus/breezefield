@@ -16,7 +16,6 @@ Math = require('mlib/mlib')
 local World = {}
 World.__index = World
 function World:new(...)
-   
    local w = {}
    setmetatable(w, self)
    w._physworld = phys.newWorld(...)
@@ -26,11 +25,11 @@ function World:new(...)
    
    -- some functions defined here to use w without being passed it
    
-   function w.collide(obja, objb, ...)
+   function w.collide(obja, objb, coll_type, ...)
       -- collision event for two Colliders
       local function run_coll(obj1, obj2, ...)
-	 if obj1.collide ~= nil then
-	    local e = obj1:collide(obj2, ...)
+	 if obj1[coll_type] ~= nil then
+	    local e = obj1[coll_type](obj1, obj2, ...)
 	    if type(e) == 'function' then
 	       w.collide_events[#w.collide_events] = e
 	    end
@@ -43,6 +42,19 @@ function World:new(...)
       end
    end
 
+   function w.enter(a, b, ...)
+      return w.collision(a, b, 'enter', ...)
+   end
+   function w.exit(a, b, ...)
+      return w.collision(a, b, 'exit', ...)
+   end
+   function w.preSolve(a, b, ...)
+      return w.collision(a, b, 'preSolve', ...)
+   end
+   function w.postSolve(a, b, ...)
+      return w.collision(a, b, 'postSolve', ...)
+   end
+   
    function w.collision(a, b, ...)
       -- objects that hit one another can have collide methods
       -- by default used as postSolve callback
@@ -51,20 +63,8 @@ function World:new(...)
       w.collide(obja, objb, ...)
    end
 
-   
-   function w.sensor_collision(a, b, ...)
-      -- because sensor collision methods aren't called otherwise
-      -- by default used as enter: callback
-      local obja = a:getUserData(a)
-      local objb = b:getUserData(b)
-      if obja:isSensor() or objb:isSensor() then
-	 w.collide(obja, objb, ...)
-      end
-   end
-
-   w:setCallbacks(w.sensor_collision, nil, nil, w.collision)
+   w:setCallbacks(w.enter, w.exit, w.preSolve, w.postSolve)
    w.collide_events = {}
-   
    return w
 end
 
