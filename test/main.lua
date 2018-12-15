@@ -12,28 +12,6 @@ function love.load()
    ball:setRestitution(0.8)
    block1 = bf.Collider.new(world, "Polygon", {150, 375, 250, 375,
 					       250, 425, 150, 425})
-   little_ball.new(
-      love.math.random(love.graphics.getWidth()), 0)
-
-   tri = bf.Collider.new(world, "Polygon", {400, 400, 450, 400, 425, 356.7})
-   -- tri:setGroupIndex(-1)
-   -- ball:setGroupIndex(-1)
-   function ball:postSolve(other)
-      if other == block1 then
-	 -- creating Collder.new should never be called inside a callback
-	 -- a limitation of (box2d)
-	 -- instead, return a function to be called during update()
-	 return spawn_random_ball
-      end
-   end
-
-   function ball:enter(other)
-      if other == tri then
-	 self:setLinearVelocity(0, -200)
-      end
-      return
-   end
-
 end
 
 function love.update(dt)
@@ -55,38 +33,3 @@ function love.draw()
    world:draw()
 end
 
--- TODO demonstrate collisionn handling
--- TODO demonstrate collision classes
-function love.mousepressed()
-   local x, y
-   local radius = 30
-   x, y = love.mouse.getPosition()
-   colls = world:queryCircleArea(x, y, radius)
-   for _, collider in ipairs(colls) do
-      if collider.identity == little_ball then
-	 local dx = love.mouse.getX() - collider:getX()
-	 local dy = love.mouse.getY() - collider:getY()
-	 local power = -5
-	 collider:applyLinearImpulse(power * dx, power * dy)
-      end
-   end
-end
-
-little_ball = {}
-little_ball.__index = little_ball
-
-function spawn_random_ball()
-   little_ball.new(love.math.random(love.graphics.getWidth()), 0)
-end
-
-function little_ball.new(x, y)
-   local n = bf.Collider.new(world, 'Circle', x, y, 5)
-   setmetatable(n, little_ball)
-   return n
-end
-
-function little_ball:draw(alpha)
-   love.graphics.setColor(0.9, 0.9, 0.0)
-   love.graphics.circle('fill', self:getX(), self:getY(), self:getRadius())
-end
-      

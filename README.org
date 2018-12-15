@@ -59,7 +59,50 @@
 ** Basics
 *** setting up a basic world
 #+BEGIN_SRC lua
+bf = require("breezefield")
 
+function love.load()
+   world = bf.newWorld(0, 90.81, true)
+   -- bf.World:new also works
+   -- any function of love.physics.world should work on World
+   print(world:getGravity())
+
+   ground = bf.Collider.new(world, "Polygon",
+				    {0, 550, 650, 550 , 650, 650, 0, 650})
+   ground:setType("static")
+
+   ball = bf.Collider.new(world, "Circle", 325, 325, 20)
+   
+   ball:setRestitution(0.8) -- any function of shape/body/fixture works
+   block1 = bf.Collider.new(world, "Polygon", {150, 375, 250, 375,
+					       250, 425, 150, 425})
+
+end
+#+END_SRC
+*** forces, movement and control
+    any functions for shape, body, or fixture work on Colliders
+#+BEGIN_SRC lua
+function love.update(dt)
+   world:update(dt)
+   if love.keyboard.isDown("right") then
+    ball:applyForce(400, 0)
+  elseif love.keyboard.isDown("left") then
+    ball:applyForce(-400, 0)
+  elseif love.keyboard.isDown("up") then
+    ball:setPosition(325, 325)
+    ball:setLinearVelocity(0, 0) 
+  elseif love.keyboard.isDown("down") then
+     ball:applyForce(0, 600)
+   end
+end
+
+#+END_SRC
+
+*** easily draw physics
+#+BEGIN_SRC lua
+function love.draw()
+   world:draw()
+end
 #+END_SRC
 
 
