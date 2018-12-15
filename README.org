@@ -149,8 +149,16 @@ end
 #+END_SRC
 
 ** change appearance of physics objects 
-   simply redifine the :draw function on your collider 
-   
+   simply define the :draw function on your collider 
+   (you can still access the default draw as :__draw__)
+#+BEGIN_SRC lua
+function little_ball:draw(alpha)
+   love.graphics.setColor(0.9, 0.9, 0.0)
+   love.graphics.circle('fill', self:getX(), self:getY(), self:getRadius())
+end
+#+END_SRC
+
+** 
 
 * future
   ideas for future features of breezefield

@@ -60,3 +60,8 @@ function little_ball.new(x, y)
    setmetatable(n, little_ball)
    return n
 end
+
+function little_ball:draw(alpha)
+   love.graphics.setColor(0.9, 0.9, 0.0)
+   love.graphics.circle('fill', self:getX(), self:getY(), self:getRadius())
+end
