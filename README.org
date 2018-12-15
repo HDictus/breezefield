@@ -55,7 +55,12 @@
     if there are any issues in breezefields implementation that complicates using
     love.physics together with it, let me know, or better yet, send a pull request
 
-* TODO example/tutorial
+* example/tutorial
+** Basics
+*** setting up a basic world
+#+BEGIN_SRC lua
+
+#+END_SRC
 
 
 * future
