@@ -3,16 +3,16 @@
 #+TOC: headlines 2
 
 * introduction
-# TODO sound less like you're dissing windfield
+
 ** why breezefield?
    The love physics library is very flexible, but doing relatively simple
    things with it can be tedious. A good solution is the [[https://github.com/adnzzzzZ/windfield][windfield]] library,
    but a few things didn't quite sit right for me.
     
-   I've used windfield for a few practice projects, and in general I can 
-   reccommend it. It makes protoyping faster, and massively reduces the time
+   I've used windfield for a few practice projects, and I liked it very much. 
+   It makes protoyping faster, and massively reduces the time
    and mental effort spent putting together all the pieces of love.physics.
-   so far however, I've encountered the occaisinal issue that was tricky to
+   so far however, I've encountered the occaisional issue that was tricky to
    track down due to (in particular) the collision-management system in place
    in windfield. When I needed to modify parts of it to my purposes, 
    I found its size and complexity made it take a little longer than it could
@@ -55,6 +55,12 @@
     if there are any issues in breezefields implementation that complicates using
     love.physics together with it, let me know, or better yet, send a pull request
 
+* Installation
+  Make sure you have [[https://love2d.org/][love2d]] and know how to use it on a basic level (last tested with 11.1)
+  then I reccomend you ensure you understand love.physics, as breezefield mostly just wraps that
+  you can start [[https://love2d.org/wiki/Tutorial:Physics][here]] 
+  once you get what's going on behind the scenes:
+  simply clone or download the repository and place breezefield anywhere in your lua path or in your project directory
 * example/tutorial
 ** Basics
 *** setting up a basic world
@@ -105,6 +111,46 @@ function love.draw()
 end
 #+END_SRC
 
+** call functions on callbacks
+   default callbacks of World will locate the colliders from a fixture's userData and call the relevant :enter :exit :postSolve or :preSolve method
+
+**** pre: make that function and object to play with
+    #+BEGIN_SRC lua
+little_ball = {}
+little_ball.__index = little_ball
+setmetatable(little_ball, bf.Collider) -- this is important
+-- otherwise setting the new object's metatable to little_ball overwrites
+
+function spawn_random_ball()
+   little_ball.new(love.math.random(love.graphics.getWidth()), 0)
+end
+
+function little_ball.new(x, y)
+   local n = bf.Collider.new(world, 'Circle', x, y, 5)
+   setmetatable(n, little_ball)
+   return n
+end
+
+#+END_SRC
+
+*** define collision function
+    one feature is that any function callbacks returned by Collider:enter/exit/<post/pre>Solve are run in world:update()
+    this lets us easily create and destroy objects in collision callbacks without crashing Box2D (love.physics's backend)
+#+BEGIN_SRC lua
+   function ball:postSolve(other)
+      if other == block1 then
+	 -- creating Collder.new should never be called inside a callback
+	 -- a limitation of (box2d)
+	 -- instead, return a function to be called during World:update()
+	 return spawn_random_ball -- see above for definition
+      end
+   end
+
+#+END_SRC
+
+** change appearance of physics objects 
+   simply redifine the :draw function on your collider 
+   
 
 * future
   ideas for future features of breezefield
