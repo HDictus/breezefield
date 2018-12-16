@@ -22,7 +22,7 @@ function Collider.new(world, collider_type, ...)
       local y = args[2]
       local r = args[3]
       o.body = phys.newBody(world._physworld, x, y, "dynamic")
-      o.shape = phys.newCircleShape(r)
+      o.shape = phys.newCircleShape(r)	 
    elseif collider_type == "Polygon" then
       o.body = phys.newBody(world._physworld, 0, 0, "dynamic")
       o.shape = phys.newPolygonShape(...)
@@ -48,11 +48,7 @@ end
 
 function Collider:__draw__()
    local mode = 'line'
-   if self.collider_type == 'Circle' then
-      love.graphics.circle(mode, self:getX(), self:getY(), self:getRadius())
-   elseif self.collider_type == 'Polygon' then
-      love.graphics.polygon(mode, self:getWorldPoints(self:getPoints()))
-   end
+   love.graphics[self.collider_type:lower()](mode, self:getSpatialIdentity())
 end
 
 function Collider:draw()
@@ -68,6 +64,15 @@ function Collider:destroy()
    -- for k, v in pairs(self) do
    --    self[k] = nil
    -- end
+end
+
+function Collider:getSpatialIdentity() -- define this for circle
+   if self.collider_type == 'Circle' then
+      return self:getX(), self:getY(), self:getRadius()
+   end
+   if self.collider_type == 'Polygon' then
+      return self:getWorldPoints(self:getPoints())
+   end
 end
 
 

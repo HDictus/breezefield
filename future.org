@@ -1,0 +1,24 @@
+* future
+  ideas for future features of breezefield
+  THESE ARE IDEAS AND ARE NOT CURRENTLY IMPLEMENTED
+  I also do not guarantee to ever get around to all of them (but feel free to contribute yourself, even if it's just a note of an idea!)
+** make it possible to use either love.physics or HC as a backend 
+   (is this worth it?)
+*** implement some 'translation' of love.physics commands to HC and vice versa
+** add more shapes
+** queryPolygonArea
+** world:newBlahBlahCollider to make switching from windfield to breezefield easier
+** add features for filtering collisions
+*** idea 1: set which colliders to ignore/collide
+**** collider:setCollides(colliders)
+**** collider:setIgnores(colliders)
+**** collider:getIgnores()
+**** collider:getCollides()
+**** collider:clearCollides() -- reset to default
+**** define identity to some value (e.g. table used to generate instances)
+***** if specific table is not set to ignore or collides, check if _collider_class is set to Ignore
+*** idea 2: interface to setFilterData/setMask/setCategory/setGroupIndex
+**** wrap them to accept list of integers, converting to 16 bit int and passing through
+*** idea 3:
+**** something to allow :enter :exit to work even without physics collisions
+**** idea 1 with collider:setCallCollision(colliders) ... ?

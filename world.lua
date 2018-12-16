@@ -1,7 +1,7 @@
--- breezefield: World.lua 
+-- breezefield: World.lua
 --[[
    World: has access to all the functions of love.physics.world
-   additionally stores all Collider objects assigned to it in 
+   additionally stores all Collider objects assigned to it in
    self.colliders (as key-value pairs)
    can draw all its Colliders
    by default, calls :collide on any colliders in it for postSolve
@@ -10,7 +10,10 @@
 -- TODO make updating work from here too
 local phys=love.physics
 
-Math = require('mlib/mlib')
+mlib = require('mlib/mlib')
+-- NOTE for now use handy mlib functions, but maybe change later
+-- they are a little overkill
+-- ooh maybe take the chance to practice c and lua integration?
 
 
 local World = {}
@@ -22,16 +25,16 @@ function World:new(...)
    set_funcs(w, w._physworld)
    w.update = nil -- to use our custom update
    w.colliders = {}
-   
+
    -- some functions defined here to use w without being passed it
-   
+
    function w.collide(obja, objb, coll_type, ...)
       -- collision event for two Colliders
       local function run_coll(obj1, obj2, ...)
 	 if obj1[coll_type] ~= nil then
 	    local e = obj1[coll_type](obj1, obj2, ...)
 	    if type(e) == 'function' then
-	       w.collide_events[#w.collide_events] = e
+	       w.collide_events[#w.collide_events+1] = e
 	    end
 	 end
       end
@@ -54,7 +57,7 @@ function World:new(...)
    function w.postSolve(a, b, ...)
       return w.collision(a, b, 'postSolve', ...)
    end
-   
+
    function w.collision(a, b, ...)
       -- objects that hit one another can have collide methods
       -- by default used as postSolve callback
@@ -71,10 +74,10 @@ end
 
 function World:draw(alpha, draw_over)
    -- draw the world
-   --[[ 
+   --[[
       alpha: sets the alpha of the drawing, defaults to 1
-      draw_over: draws the collision objects shapes even if their 
-                .draw method is overwritten
+      draw_over: draws the collision objects shapes even if their
+		.draw method is overwritten
    --]]
    for _, c in pairs(self.colliders) do
       love.graphics.setColor(1, 1, 1, alpha or 1)
@@ -90,8 +93,6 @@ end
 
 -- little utility functi on
 
--- TODO implement queryPolygonArea
-
 function World:queryRectangleArea(x1, y1, x2, y2)
    local colls = {}
    local callback = function(fixture)
@@ -102,6 +103,36 @@ function World:queryRectangleArea(x1, y1, x2, y2)
    return colls
 end
 
+function World:queryPolygonArea(...)
+   local vertices = {...}
+   if type(vertices[1]) == table then
+      vertices = vertices[1]
+   end
+
+   local function add_coordinate(value, coords, max, min)
+      coords[#coords+1] = value
+      if value > max then max = value
+      elseif value < min then min = value end
+      return coords, max, min
+   end
+
+   local x = {}
+   local maxx = 0
+   local minx = 0
+   local y = {}
+   local maxy = 0
+   local miny = 0
+   for i, v in ipairs(vertices) do
+      if i % 2 == 0 then
+	 x, maxx, minx = add_coordinate(v, x, maxx, minx)
+      else
+	 y, maxy, miny = add_coordinate(v, y, maxy, miny)
+      end
+   end
+   local colls = self:queryRectangleArea(minx, miny, maxx, maxy)
+   return checkIntersections(colls, 'Polygon', vertices)
+end
+
 function World:queryCircleArea(x, y, r)
    -- get all colliders in a circle are
    local maxx = x + r
@@ -110,28 +141,46 @@ function World:queryCircleArea(x, y, r)
    local miny = y - r
    local colls = self:queryRectangleArea(minx, miny,
 					 maxx, maxy)
-   -- NOTE for now use handy mlib functions, but maybe change later
-   -- they are a little overkill
-   -- ooh maybe take the chance to embed some c?
-   for i, c in ipairs(colls) do
-      local isin = false
-      if c.collider_type == 'Circle' then
-	 isin = 
-	    Math.circle.getCircleIntersection(x, y, r, c:getX(),
-					      c:getY(), c:getRadius())
-      elseif c.collider_type == 'Polygon' then
-	 isin =
-	    Math.polygon.getCircleIntersection(
-	       x, y, r,
-	       {c:getWorldPoints(c:getPoints())})   
-      else
-	 error('unexpected collider type')
-      end
+   return checkIntersections(colls, 'Circle', x, y, r)
+end
 
+
+-- a helper for getting intersections from mlib
+
+function checkIntersections(colls, intersection_type, ...)
+
+   local function get_mlib_intersection(collider, type_2, ...)
+      local type_1 = collider.collider_type
+      local func =  mlib[type_1:lower()]['get'..type_2..'Intersection']
+      -- awkward
+      -- would prefer if type_1 args were consistenly required first
+      -- messing with these args is awkward
+      -- is this really cleaner than individual calls within functions?
+      -- TODO send a pull request to mlib?
+      if type_1 == 'Circle' then
+	 local args = {collider:getSpatialIdentity()}
+	 for i, v in ipairs({...}) do
+	    args[#args+1] = v
+	 end
+	 return func(unpack(args))
+	 -- will work whether type_2 is polygon or Circle
+      else
+	 local args = {...}
+	 args[#args+1] = {collider:getSpatialIdentity()}
+	 return func(unpack(args))
+	 -- getPolygonPolygonIntersection requires tables
+	 -- getPolygonCircleIntersection wants x,y,r and then table
+      end
+   end
+
+   for i, c in ipairs(colls) do
+      isin = get_mlib_intersection(c, intersection_type, ...)
       if not isin then table.remove(colls, i) end
    end
    return colls
 end
+
+---------------------------------------------------
 
 function World:update(dt)
    self._physworld:update(dt)
@@ -142,4 +191,3 @@ function World:update(dt)
 end
 
 return World
-

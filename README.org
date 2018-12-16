@@ -57,7 +57,9 @@
 
 * Installation
   I reccomend you ensure you understand love.physics, as breezefield mostly just wraps that. You can start [[https://love2d.org/wiki/Tutorial:Physics][here]] 
-  To install and use simply clone or download the repository and place breezefield anywhere in your lua path or in your project directory
+  To install simply clone or download the repository and place breezefield anywhere in your lua path or in your project directory
+  breezefield presently relies on [[https://github.com/davisdude/mlib][mlib]], so download that too and put it in your path as well (or inside breezefield)
+
 * example/tutorial
 ** Basics
 *** setting up a basic world
@@ -108,8 +110,8 @@ function love.draw()
 end
 #+END_SRC
 
-** call functions on callbacks
-   default callbacks of World will locate the colliders from a fixture's userData and call the relevant :enter :exit :postSolve or :preSolve method
+** call functions on collision
+   default collision callbacks of World will locate the colliders from a fixture's userData and call the relevant :enter :exit :postSolve or :preSolve method
 
 **** pre: make that function and object to play with
     #+BEGIN_SRC lua
@@ -155,6 +157,27 @@ function little_ball:draw(alpha)
 end
 #+END_SRC
 
+** query the world (supports rectangle, circle, and polygon)
+#+BEGIN_SRC lua
+function love.mousepressed()
+   local x, y
+   local radius = 30
+   x, y = love.mouse.getPosition()
+   local colls = world:queryCircleArea(x, y, radius)
+   for _, collider in ipairs(colls) do
+      if collider.identity == little_ball then
+	 local dx = love.mouse.getX() - collider:getX()
+	 local dy = love.mouse.getY() - collider:getY()
+	 local power = -5
+	 collider:applyLinearImpulse(power * dx, power * dy)
+      end
+   end
+end
+#+END_SRC
+and after little_ball's declaration
+#+BEGIN_SRC lua
+little_ball.identity = little_ball
+#+END_SRC
 ** TODO define some form of collision filtering
    for now, see:
    [[https://love2d.org/wiki/Contact:setEnabled]]

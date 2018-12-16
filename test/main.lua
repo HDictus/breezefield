@@ -8,7 +8,7 @@ function love.load()
    ground:setType("static")
 
    ball = bf.Collider.new(world, "Circle", 325, 325, 20)
-      
+
    ball:setRestitution(0.8)
    block1 = bf.Collider.new(world, "Polygon", {150, 375, 250, 375,
 					       250, 425, 150, 425})
@@ -44,7 +44,7 @@ function love.update(dt)
     ball:applyForce(-400, 0)
   elseif love.keyboard.isDown("up") then
     ball:setPosition(325, 325)
-    ball:setLinearVelocity(0, 0) 
+    ball:setLinearVelocity(0, 0)
   elseif love.keyboard.isDown("down") then
      ball:applyForce(0, 600)
    end
@@ -61,7 +61,7 @@ function love.mousepressed()
    local x, y
    local radius = 30
    x, y = love.mouse.getPosition()
-   colls = world:queryCircleArea(x, y, radius)
+   local colls = world:queryCircleArea(x, y, radius)
    for _, collider in ipairs(colls) do
       if collider.identity == little_ball then
 	 local dx = love.mouse.getX() - collider:getX()
@@ -74,6 +74,7 @@ end
 
 little_ball = {}
 little_ball.__index = little_ball
+little_ball.identity = little_ball
 setmetatable(little_ball, bf.Collider)
 
 function spawn_random_ball()
@@ -90,4 +91,3 @@ function little_ball:draw(alpha)
    love.graphics.setColor(0.9, 0.9, 0.0)
    love.graphics.circle('fill', self:getX(), self:getY(), self:getRadius())
 end
-      
