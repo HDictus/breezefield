@@ -19,6 +19,16 @@ mlib = require('mlib/mlib')
 local World = {}
 World.__index = World
 function World:new(...)
+   -- create a new physics world
+   --[[
+      inputs: (same as love.physics.newWorld)
+      xg: float, gravity in x direction
+      yg: float, gravity in y direction
+      sleep: boolean, whether bodies can sleep
+      outputs:
+      w: bf.World, the created world
+   ]]--
+
    local w = {}
    setmetatable(w, self)
    w._physworld = phys.newWorld(...)
@@ -89,11 +99,15 @@ function World:draw(alpha, draw_over)
    end
 end
 
--- callbacks
-
--- little utility functi on
-
 function World:queryRectangleArea(x1, y1, x2, y2)
+   -- query a bounding-box aligned area for colliders
+   --[[
+      inputs:
+      x1, y1, x2, y2: floats, the x and y coordinates of two points
+      outputs:
+      colls: table, all colliders in bounding box
+   --]]
+
    local colls = {}
    local callback = function(fixture)
       table.insert(colls, fixture:getUserData())
@@ -104,6 +118,13 @@ function World:queryRectangleArea(x1, y1, x2, y2)
 end
 
 function World:queryPolygonArea(...)
+   -- query an area enclosed by the lines connecting a series of points
+   --[[
+      inputs:
+      (x, y, ) X 3+: floats, x and y coordinates of the points defining polygon
+      outputs:
+      colls: table, all Colliders intersecting the area
+   --]]
    local vertices = {...}
    if type(vertices[1]) == table then
       vertices = vertices[1]
@@ -135,6 +156,12 @@ end
 
 function World:queryCircleArea(x, y, r)
    -- get all colliders in a circle are
+   --[[
+      inputs: 
+      x, y, r: floats, x, y and radius of circle
+      outputs:
+      colls: table: colliders in area
+   ]]--
    local maxx = x + r
    local minx = x - r
    local maxy = y + r
@@ -148,7 +175,7 @@ end
 -- a helper for getting intersections from mlib
 
 function checkIntersections(colls, intersection_type, ...)
-
+   -- iterate through a table to see if they intersect
    local function get_mlib_intersection(collider, type_2, ...)
       local type_1 = collider.collider_type
       local func =  mlib[type_1:lower()]['get'..type_2..'Intersection']
@@ -183,6 +210,7 @@ end
 ---------------------------------------------------
 
 function World:update(dt)
+   -- update physics world
    self._physworld:update(dt)
    for i, v in pairs(self.collide_events) do
       v()
