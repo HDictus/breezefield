@@ -1,4 +1,3 @@
-#+TITLE Breezefield: a lightweight windfield alternative
 
 #+TOC: headlines 2
 
