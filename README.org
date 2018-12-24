@@ -40,14 +40,15 @@
   world:draw()
   #+END_SRC 
 *** can be repurposed to draw in-game shapes/sprites!
-  just redefine :draw on your collider objects, 
-  add other objects with :draw methods to world.colliders
-  call world:draw(<alpha>, true) to draw physics boundaries in addition to
+  Just redefine :draw on your collider objects, 
+  add other objects with :draw methods to world.colliders.
+  # TODO rename world.colliders to world.to_draw?
+  Call world:draw(<alpha>, true) to draw physics boundaries in addition to
   self-defined :draw methods
 ** simple collision system
    
 ** access to love.physics objects if you have something more creative in mind
-   World._physworld contains the regular love.physics.world object
+   World._physworld contains the regular love.physics.world object.
    Collider.fixture, Collider.body, Collider.shape all contain the 
    respective physics objects
 *** please let me know if there are any issues 
@@ -55,8 +56,8 @@
     love.physics together with it, let me know, or better yet, send a pull request
 
 * Installation
-  I reccomend you ensure you understand love.physics, as breezefield mostly just wraps that. You can start [[https://love2d.org/wiki/Tutorial:Physics][here]] 
-  To install simply clone or download the repository and place breezefield anywhere in your lua path or in your project directory
+  I reccomend you ensure you understand love.physics, as breezefield mostly just wraps that. You can start [[https://love2d.org/wiki/Tutorial:Physics][here]]. 
+  To install simply clone or download the repository and place breezefield anywhere in your lua path or in your project directory.
   breezefield presently relies on [[https://github.com/davisdude/mlib][mlib]], so download that too and put it in your path as well (or inside breezefield)
 
 * example/tutorial
@@ -184,4 +185,8 @@ little_ball.identity = little_ball
 
 
 
+   
+* links
+** forum
+   [[forum][https://love2d.org/forums/viewtopic.php?f=5&t=86113&p=224718#p224718]]
    
