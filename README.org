@@ -45,8 +45,6 @@
   # TODO rename world.colliders to world.to_draw?
   Call world:draw(<alpha>, true) to draw physics boundaries in addition to
   self-defined :draw methods
-** simple collision system
-   
 ** access to love.physics objects if you have something more creative in mind
    World._physworld contains the regular love.physics.world object.
    Collider.fixture, Collider.body, Collider.shape all contain the 
