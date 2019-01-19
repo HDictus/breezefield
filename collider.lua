@@ -1,12 +1,4 @@
--- a Collider entity, wrapping shape, body, and fixtue
---[[
-   the __draw__ method draws the physics object
-   you can overwrite the :draw method to draw your sprites, shapes etc
-   
-   
-
-]]--
-
+-- a Collider object, wrapping shape, body, and fixtue
 
 
 local Collider = {}
@@ -16,11 +8,12 @@ Collider.__index = Collider
 COLLIDER_TYPES = {
    CIRCLE = "Circle",
    CIRC = "Circle",
-   -- RECTANGLE = "Rectangle",
+   RECTANGLE = "Rectangle",
+   RECT = "Rectangle",
    POLYGON = "Polygon",
    POLY = "Polygon",
-   -- "LINE" = "Line",
-   -- "CHAIN" = "Chain"
+   LINE = "Line",
+   CHAIN = "Chain"
 }
 
 function Collider.new(world, collider_type, ...)
@@ -29,20 +22,22 @@ function Collider.new(world, collider_type, ...)
    setmetatable(o, Collider)
    -- note that you will need to set static vs dynamic later
 
-   collider_type = COLLIDER_TYPES[string.upper(collider_type)]
-   assert(collider_type ~= nil, "unknown collider type: "..collider_type)
-   
+   local _collider_type = COLLIDER_TYPES[collider_type:upper()]
+   assert(_collider_type ~= nil, "unknown collider type: "..collider_type)
+   collider_type = _collider_type
    if collider_type == 'Circle' then
-      local x = args[1]
-      local y = args[2]
-      local r = args[3]
+      local x, y, r = unpack(args)
       o.body = lp.newBody(world._world, x, y, "dynamic")
-      o.shape = lp.newCircleShape(r)	 
-   elseif collider_type == "Polygon" then
+      o.shape = lp.newCircleShape(r)
+   elseif collider_type == "Rectangle" then
+      local x, y, w, h = unpack(args)
+      o.body = lp.newBody(world._world, x, y, "dynamic")
+      o.shape = lp.newRectangleShape(w, h)
+      collider_type = "Polygon"
+   else
       o.body = lp.newBody(world._world, 0, 0, "dynamic")
-      o.shape = lp.newPolygonShape(...)
+      o.shape = lp['new'..collider_type..'Shape'](...)
    end
-   -- that's all I need for now
 
    o.collider_type = collider_type
    
@@ -74,16 +69,12 @@ function Collider:destroy()
    self.fixture:setUserData(nil)
    self.fixture:destroy()
    self.body:destroy()
-   -- for k, v in pairs(self) do
-   --    self[k] = nil
-   -- end
 end
 
-function Collider:getSpatialIdentity() -- define this for circle
+function Collider:getSpatialIdentity()
    if self.collider_type == 'Circle' then
       return self:getX(), self:getY(), self:getRadius()
-   end
-   if self.collider_type == 'Polygon' then
+   else
       return self:getWorldPoints(self:getPoints())
    end
 end

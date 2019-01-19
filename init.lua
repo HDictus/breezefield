@@ -5,7 +5,7 @@
    World wraps world, and provides automatic drawing simplified collisions
 ]]--
 
--- TODO do something nice to make set/getFilterData more intuitive
+
 
 local bf = {}
 
@@ -34,7 +34,6 @@ end
 lp = love.physics
 lg = love.graphics
 
---TODO how to just get collider, but only local collider
 local Collider = require('breezefield/collider')
 local World = require('breezefield/world')
 
