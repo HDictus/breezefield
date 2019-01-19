@@ -89,6 +89,7 @@ function World:draw(alpha, draw_over)
       draw_over: draws the collision objects shapes even if their
 		.draw method is overwritten
    --]]
+   local color = {love.graphics.getColor()}
    for _, c in pairs(self.colliders) do
       love.graphics.setColor(1, 1, 1, alpha or 1)
       c:draw(alpha)
@@ -97,6 +98,7 @@ function World:draw(alpha, draw_over)
 	 c:__draw__()
       end
    end
+   love.graphics.setColor(color)
 end
 
 function World:queryRectangleArea(x1, y1, x2, y2)
