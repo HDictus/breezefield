@@ -7,7 +7,7 @@
 
 ]]--
 
-phys=love.physics
+
 
 local Collider = {}
 Collider.__index = Collider
@@ -21,11 +21,11 @@ function Collider.new(world, collider_type, ...)
       local x = args[1]
       local y = args[2]
       local r = args[3]
-      o.body = phys.newBody(world._physworld, x, y, "dynamic")
-      o.shape = phys.newCircleShape(r)	 
+      o.body = lp.newBody(world._world, x, y, "dynamic")
+      o.shape = lp.newCircleShape(r)	 
    elseif collider_type == "Polygon" then
-      o.body = phys.newBody(world._physworld, 0, 0, "dynamic")
-      o.shape = phys.newPolygonShape(...)
+      o.body = lp.newBody(world._world, 0, 0, "dynamic")
+      o.shape = lp.newPolygonShape(...)
    else
       error("unknown collider type: "..collider_type)
    end
@@ -33,7 +33,7 @@ function Collider.new(world, collider_type, ...)
 
    o.collider_type = collider_type
    
-   o.fixture = phys.newFixture(o.body, o.shape, 1)
+   o.fixture = lp.newFixture(o.body, o.shape, 1)
    o.fixture:setUserData(o)
    
    set_funcs(o, o.body)

@@ -31,8 +31,8 @@ function World:new(...)
 
    local w = {}
    setmetatable(w, self)
-   w._physworld = phys.newWorld(...)
-   set_funcs(w, w._physworld)
+   w._world = lp.newWorld(...)
+   set_funcs(w, w._world)
    w.update = nil -- to use our custom update
    w.colliders = {}
 
@@ -213,7 +213,7 @@ end
 
 function World:update(dt)
    -- update physics world
-   self._physworld:update(dt)
+   self._world:update(dt)
    for i, v in pairs(self.collide_events) do
       v()
       self.collide_events[i] = nil
