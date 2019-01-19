@@ -12,11 +12,26 @@
 local Collider = {}
 Collider.__index = Collider
 
+
+COLLIDER_TYPES = {
+   CIRCLE = "Circle",
+   CIRC = "Circle",
+   -- RECTANGLE = "Rectangle",
+   POLYGON = "Polygon",
+   POLY = "Polygon",
+   -- "LINE" = "Line",
+   -- "CHAIN" = "Chain"
+}
+
 function Collider.new(world, collider_type, ...)
    local o = {}
    local args = {...}
    setmetatable(o, Collider)
    -- note that you will need to set static vs dynamic later
+
+   collider_type = COLLIDER_TYPES[string.upper(collider_type)]
+   assert(collider_type ~= nil, "unknown collider type: "..collider_type)
+   
    if collider_type == 'Circle' then
       local x = args[1]
       local y = args[2]
@@ -26,8 +41,6 @@ function Collider.new(world, collider_type, ...)
    elseif collider_type == "Polygon" then
       o.body = lp.newBody(world._world, 0, 0, "dynamic")
       o.shape = lp.newPolygonShape(...)
-   else
-      error("unknown collider type: "..collider_type)
    end
    -- that's all I need for now
 
