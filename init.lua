@@ -31,8 +31,8 @@ function set_funcs(mainobject, subobject)
    end
 end
 
-lp = love.physics
-lg = love.graphics
+local lp = love.physics
+local lg = love.graphics
 
 local Collider = require('breezefield/collider')
 local World = require('breezefield/world')

@@ -10,7 +10,7 @@
 -- TODO make updating work from here too
 local phys=love.physics
 
-mlib = require('mlib/mlib')
+local mlib = require('mlib/mlib')
 -- NOTE for now use handy mlib functions, but maybe change later
 -- they are a little overkill
 -- ooh maybe take the chance to practice c and lua integration?
