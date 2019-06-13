@@ -1,5 +1,14 @@
+local pre_globals = {}
+for n, v in pairs(_G) do
+   pre_globals[n] = v
+end
+
 bf = require("breezefield")
 
+for n, v in pairs(_G) do
+   assert(n == 'bf' or pre_globals[n] ~= nil, 'stray global variable: '.. n)
+end
+   
 -- TODO split into multiple test scripts
 function love.load()
    world = bf.newWorld(0, 90.81, true)

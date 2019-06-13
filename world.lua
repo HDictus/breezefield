@@ -8,12 +8,49 @@
    or for beginContact if the colliders are sensors
 --]]
 -- TODO make updating work from here too
-local phys=love.physics
 
-mlib = require('mlib/mlib')
+local set_funcs, lp, lg = unpack(require("utils"))
+local mlib = require('mlib/mlib')
 -- NOTE for now use handy mlib functions, but maybe change later
 -- they are a little overkill
 -- ooh maybe take the chance to practice c and lua integration?
+
+-- a helper for getting intersections from mlib
+
+local function checkIntersections(colls, intersection_type, ...)
+   -- iterate through a table to see if they intersect
+   local function get_mlib_intersection(collider, type_2, ...)
+      local type_1 = collider.collider_type
+      local func =  mlib[type_1:lower()]['get'..type_2..'Intersection']
+      -- awkward
+      -- would prefer if type_1 args were consistenly required first
+      -- messing with these args is awkward
+      -- is this really cleaner than individual calls within functions?
+      -- TODO send a pull request to mlib?
+      if type_1 == 'Circle' then
+	 local args = {collider:getSpatialIdentity()}
+	 for i, v in ipairs({...}) do
+	    args[#args+1] = v
+	 end
+	 return func(unpack(args))
+	 -- will work whether type_2 is polygon or Circle
+      else
+	 local args = {...}
+	 args[#args+1] = {collider:getSpatialIdentity()}
+	 return func(unpack(args))
+	 -- getPolygonPolygonIntersection requires tables
+	 -- getPolygonCircleIntersection wants x,y,r and then table
+      end
+   end
+
+   for i, c in ipairs(colls) do
+      isin = get_mlib_intersection(c, intersection_type, ...)
+      if not isin then table.remove(colls, i) end
+   end
+   return colls
+end
+
+---------------------------------------------------
 
 
 local World = {}
@@ -174,42 +211,6 @@ function World:queryCircleArea(x, y, r)
 end
 
 
--- a helper for getting intersections from mlib
-
-function checkIntersections(colls, intersection_type, ...)
-   -- iterate through a table to see if they intersect
-   local function get_mlib_intersection(collider, type_2, ...)
-      local type_1 = collider.collider_type
-      local func =  mlib[type_1:lower()]['get'..type_2..'Intersection']
-      -- awkward
-      -- would prefer if type_1 args were consistenly required first
-      -- messing with these args is awkward
-      -- is this really cleaner than individual calls within functions?
-      -- TODO send a pull request to mlib?
-      if type_1 == 'Circle' then
-	 local args = {collider:getSpatialIdentity()}
-	 for i, v in ipairs({...}) do
-	    args[#args+1] = v
-	 end
-	 return func(unpack(args))
-	 -- will work whether type_2 is polygon or Circle
-      else
-	 local args = {...}
-	 args[#args+1] = {collider:getSpatialIdentity()}
-	 return func(unpack(args))
-	 -- getPolygonPolygonIntersection requires tables
-	 -- getPolygonCircleIntersection wants x,y,r and then table
-      end
-   end
-
-   for i, c in ipairs(colls) do
-      isin = get_mlib_intersection(c, intersection_type, ...)
-      if not isin then table.remove(colls, i) end
-   end
-   return colls
-end
-
----------------------------------------------------
 
 function World:update(dt)
    -- update physics world

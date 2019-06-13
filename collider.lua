@@ -1,11 +1,11 @@
 -- a Collider object, wrapping shape, body, and fixtue
-
+local set_funcs, lp, lg = unpack(require("utils"))
 
 local Collider = {}
 Collider.__index = Collider
 
 
-COLLIDER_TYPES = {
+local COLLIDER_TYPES = {
    CIRCLE = "Circle",
    CIRC = "Circle",
    RECTANGLE = "Rectangle",
