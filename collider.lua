@@ -1,5 +1,5 @@
 -- a Collider object, wrapping shape, body, and fixtue
-local set_funcs, lp, lg = unpack(require("utils"))
+local set_funcs, lp, lg = unpack(require("breezefield/utils"))
 
 local Collider = {}
 Collider.__index = Collider

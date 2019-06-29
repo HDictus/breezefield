@@ -9,7 +9,7 @@
 --]]
 -- TODO make updating work from here too
 
-local set_funcs, lp, lg = unpack(require("utils"))
+local set_funcs, lp, lg = unpack(require("breezefield/utils"))
 local mlib = require('mlib/mlib')
 -- NOTE for now use handy mlib functions, but maybe change later
 -- they are a little overkill
