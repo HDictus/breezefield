@@ -30,6 +30,9 @@ function love.load()
    edge = bf.Collider.new(world, 'Edge', 500, 300, 500, 500)
    edge:setType('static')
 
+   chain = bf.Collider.new(world, 'Chain', false, 100, 100, 110, 110, 115, 110, 120, 115, 120, 125, 130, 130)
+
+
    function ball:postSolve(other)
       if other == block1 then
 	 -- creating Collder.new should never be called inside a callback

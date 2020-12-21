@@ -12,7 +12,8 @@ local COLLIDER_TYPES = {
    RECT = "Rectangle",
    POLYGON = "Polygon",
    POLY = "Polygon",
-   EDGE = 'Edge'
+   EDGE = 'Edge',
+   CHAIN = 'Chain'
 }
 
 function Collider.new(world, collider_type, ...)
@@ -54,7 +55,7 @@ function Collider.new(world, collider_type, ...)
 end
 
 function Collider:draw_type()
-   if self.collider_type == 'Edge' then
+   if self.collider_type == 'Edge' or self.collider_type == 'Chain' then
       return 'line'
    end
    return self.collider_type:lower()
