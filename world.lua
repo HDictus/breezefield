@@ -78,9 +78,6 @@ function World:new(...)
    function w.collide(obja, objb, coll_type, ...)
       -- collision event for two Colliders
       local function run_coll(obj1, obj2, ...)
-	 if obj1.collides ~= nil then
-	    print(obj1.postSolve)
-	 end
 	 if obj1[coll_type] ~= nil then
 	    local e = obj1[coll_type](obj1, obj2, ...)
 	    if type(e) == 'function' then
