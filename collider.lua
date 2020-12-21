@@ -12,8 +12,7 @@ local COLLIDER_TYPES = {
    RECT = "Rectangle",
    POLYGON = "Polygon",
    POLY = "Polygon",
-   LINE = "Line",
-   CHAIN = "Chain"
+   EDGE = 'Edge'
 }
 
 function Collider.new(world, collider_type, ...)
@@ -54,9 +53,22 @@ function Collider.new(world, collider_type, ...)
    return o
 end
 
+function Collider:draw_type()
+   if self.collider_type == 'Edge' then
+      return 'line'
+   end
+   return self.collider_type:lower()
+end
+
 function Collider:__draw__()
-   local mode = 'line'
-   love.graphics[self.collider_type:lower()](mode, self:getSpatialIdentity())
+   self._draw_type = self._draw_type or self:draw_type()
+   local args
+   if self._draw_type == 'line' then
+      args = {self:getSpatialIdentity()}
+   else
+      args = {'line', self:getSpatialIdentity()}
+   end
+   love.graphics[self:draw_type()](unpack(args))
 end
 
 function Collider:draw()
