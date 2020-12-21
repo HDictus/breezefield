@@ -27,6 +27,7 @@ function love.load()
       love.math.random(love.graphics.getWidth()), 0)
 
    tri = bf.Collider.new(world, "Polygon", {400, 400, 450, 400, 425, 356.7})
+
    edge = bf.Collider.new(world, 'Edge', 500, 300, 500, 500)
    edge:setType('static')
 
