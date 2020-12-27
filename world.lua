@@ -8,8 +8,8 @@
    or for beginContact if the colliders are sensors
 --]]
 -- TODO make updating work from here too
-
-local set_funcs, lp, lg = unpack(require("breezefield/utils"))
+local Collider = require('breezefield/collider')
+local set_funcs, lp, lg, COLLIDER_TYPES = unpack(require("breezefield/utils"))
 local mlib = require('mlib/mlib')
 -- NOTE for now use handy mlib functions, but maybe change later
 -- they are a little overkill
@@ -219,6 +219,55 @@ function World:update(dt)
       v()
       self.collide_events[i] = nil
    end
+end
+
+--[[
+create a new collider in this world
+
+args:
+   collider_type (string): the type of the collider (not case seinsitive). any of:
+      circle, rectangle, polygon, edge, chain. 
+   shape_arguments (table): arguments required to instantiate shape.
+      circle: {x, y, radius}
+      rectangle: {x, y, width height}
+      polygon/edge/chain: {x1, y1, x2, y2, ...}
+   table_to_use (optional, table): table to generate as the collider
+]]--
+function World:newCollider(collider_type, shape_arguments, table_to_use)
+      
+   local o = table_to_use or {}
+   setmetatable(o, Collider)
+   -- note that you will need to set static vs dynamic later
+   local _collider_type = COLLIDER_TYPES[collider_type:upper()]
+   assert(_collider_type ~= nil, "unknown collider type: "..collider_type)
+   collider_type = _collider_type
+   if collider_type == 'Circle' then
+      local x, y, r = unpack(shape_arguments)
+      o.body = lp.newBody(self._world, x, y, "dynamic")
+      o.shape = lp.newCircleShape(r)
+   elseif collider_type == "Rectangle" then
+      local x, y, w, h = unpack(shape_arguments)
+      o.body = lp.newBody(self._world, x, y, "dynamic")
+      o.shape = lp.newRectangleShape(w, h)
+      collider_type = "Polygon"
+   else
+      o.body = lp.newBody(self._world, 0, 0, "dynamic")
+      o.shape = lp['new'..collider_type..'Shape'](unpack(shape_arguments))
+   end
+
+   o.collider_type = collider_type
+   
+   o.fixture = lp.newFixture(o.body, o.shape, 1)
+   o.fixture:setUserData(o)
+   
+   set_funcs(o, o.body)
+   set_funcs(o, o.shape)
+   set_funcs(o, o.fixture)
+
+   -- index by self for now
+   o._world = self
+   self.colliders[o] = o
+   return o
 end
 
 return World
