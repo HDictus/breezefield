@@ -8,6 +8,7 @@
    or for beginContact if the colliders are sensors
 --]]
 -- TODO make updating work from here too
+-- TODO: update test and tutorial
 local Collider = require('breezefield/collider')
 local set_funcs, lp, lg, COLLIDER_TYPES = unpack(require("breezefield/utils"))
 local mlib = require('mlib/mlib')
@@ -17,27 +18,41 @@ local mlib = require('mlib/mlib')
 
 -- a helper for getting intersections from mlib
 
-local function checkIntersections(colls, intersection_type, ...)
+local function checkInside(colls, intersection_type, ...)
    -- iterate through a table to see if they intersect
-   local function get_mlib_intersection(collider, type_2, ...)
-      local type_1 = collider.collider_type
-      local func =  mlib[type_1:lower()]['get'..type_2..'Intersection']
+   -- ... is table of vertices for polygons, x, y, r for circle
+   local function get_mlib_intersection(collider, type_1, ...)
+      local type_2 = collider.collider_type
+
+      local is_intersect =  mlib[type_1:lower()]['get'..type_2..'Intersection']
+      local is_inside = mlib[type_1:lower()]['is'..type_2..'CompletelyInside']
       -- awkward
       -- would prefer if type_1 args were consistenly required first
       -- messing with these args is awkward
       -- is this really cleaner than individual calls within functions?
       -- TODO send a pull request to mlib?
-      if type_1 == 'Circle' then
+
+      -- four possibilities:
+      -- circle-circle
+      ---- ..., collider
+      -- circle-polygon
+      ---- ..., unpack(collider)
+      -- polygon-circle
+      ---- unpack(collider), ...
+      ---- polygon-polygon
+      ----- ..., unpack(collider)
+      
+      if type_2 == 'Circle' then
 	 local args = {collider:getSpatialIdentity()}
 	 for i, v in ipairs({...}) do
 	    args[#args+1] = v
 	 end
-	 return func(unpack(args))
+	 return is_intersect(unpack(args)) or is_inside(unpack(args))
 	 -- will work whether type_2 is polygon or Circle
       else
 	 local args = {...}
 	 args[#args+1] = {collider:getSpatialIdentity()}
-	 return func(unpack(args))
+	 return is_intersect(unpack(args)) or is_inside(unpack(args))
 	 -- getPolygonPolygonIntersection requires tables
 	 -- getPolygonCircleIntersection wants x,y,r and then table
       end
@@ -165,32 +180,33 @@ function World:queryPolygonArea(...)
       colls: table, all Colliders intersecting the area
    --]]
    local vertices = {...}
-   if type(vertices[1]) == table then
+   if type(vertices[1]) == 'table' then
       vertices = vertices[1]
    end
 
    local function add_coordinate(value, coords, max, min)
       coords[#coords+1] = value
-      if value > max then max = value
-      elseif value < min then min = value end
+      if value > max then max = value end
+      if value < min then min = value end
       return coords, max, min
    end
 
    local x = {}
-   local maxx = 0
-   local minx = 0
+   local maxx = -math.huge
+   local minx = math.huge
    local y = {}
-   local maxy = 0
-   local miny = 0
+   local maxy = -math.huge
+   local miny = math.huge
    for i, v in ipairs(vertices) do
-      if i % 2 == 0 then
+      if i % 2 == 1 then
 	 x, maxx, minx = add_coordinate(v, x, maxx, minx)
       else
 	 y, maxy, miny = add_coordinate(v, y, maxy, miny)
       end
    end
    local colls = self:queryRectangleArea(minx, miny, maxx, maxy)
-   return checkIntersections(colls, 'Polygon', vertices)
+
+   return checkInside(colls, 'Polygon', vertices)
 end
 
 function World:queryCircleArea(x, y, r)
@@ -207,7 +223,7 @@ function World:queryCircleArea(x, y, r)
    local miny = y - r
    local colls = self:queryRectangleArea(minx, miny,
 					 maxx, maxy)
-   return checkIntersections(colls, 'Circle', x, y, r)
+   return checkInside(colls, 'Circle', x, y, r)
 end
 
 
