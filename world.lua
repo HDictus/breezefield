@@ -171,6 +171,7 @@ function World:queryRectangleArea(x1, y1, x2, y2)
    return colls
 end
 
+
 function World:queryPolygonArea(...)
    -- query an area enclosed by the lines connecting a series of points
    --[[
@@ -183,30 +184,13 @@ function World:queryPolygonArea(...)
    if type(vertices[1]) == 'table' then
       vertices = vertices[1]
    end
-
-   local function add_coordinate(value, coords, max, min)
-      coords[#coords+1] = value
-      if value > max then max = value end
-      if value < min then min = value end
-      return coords, max, min
-   end
-
-   local x = {}
-   local maxx = -math.huge
-   local minx = math.huge
-   local y = {}
-   local maxy = -math.huge
-   local miny = math.huge
-   for i, v in ipairs(vertices) do
-      if i % 2 == 1 then
-	 x, maxx, minx = add_coordinate(v, x, maxx, minx)
-      else
-	 y, maxy, miny = add_coordinate(v, y, maxy, miny)
-      end
-   end
-   local colls = self:queryRectangleArea(minx, miny, maxx, maxy)
-
-   return checkInside(colls, 'Polygon', vertices)
+   local checkcoll = self:newCollider(
+      'Polygon', vertices)
+   checkcoll:setSensor(true)
+   self:update(0)
+   local colls = checkcoll:collider_contacts(checkcoll)
+   checkcoll:destroy()
+   return colls
 end
 
 function World:queryCircleArea(x, y, r)
@@ -217,13 +201,12 @@ function World:queryCircleArea(x, y, r)
       outputs:
       colls: table: colliders in area
    ]]--
-   local maxx = x + r
-   local minx = x - r
-   local maxy = y + r
-   local miny = y - r
-   local colls = self:queryRectangleArea(minx, miny,
-					 maxx, maxy)
-   return checkInside(colls, 'Circle', x, y, r)
+   local checkcoll = self:newCollider('Circle', {x, y, r})
+   checkcoll:setSensor(true)
+   self:update(0)
+   local colls = checkcoll:collider_contacts(checkcoll)
+   checkcoll:destroy()
+   return colls
 end
 
 

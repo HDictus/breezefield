@@ -49,5 +49,18 @@ function Collider:getSpatialIdentity()
    end
 end
 
+function Collider:collider_contacts()
+   local contacts = self:getContacts()
+   local colliders = {}
+   for i, contact in ipairs(contacts) do
+      local f1, f2 = contact:getFixtures()
+      if f1 == self.fixture then
+	 colliders[#colliders+1] = f2:getUserData()
+      else
+	 colliders[#colliders+1] = f1:getUserData()
+      end
+   end
+   return colliders
+end
 
 return Collider
