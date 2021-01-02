@@ -17,4 +17,16 @@ local function set_funcs(mainobject, subobject)
    end
 end
 
-return {set_funcs, love.physics, love.graphics}
+local COLLIDER_TYPES = {
+   CIRCLE = "Circle",
+   CIRC = "Circle",
+   RECTANGLE = "Rectangle",
+   RECT = "Rectangle",
+   POLYGON = "Polygon",
+   POLY = "Polygon",
+   EDGE = 'Edge',
+   CHAIN = 'Chain'
+}
+
+
+return {set_funcs, love.physics, love.graphics, COLLIDER_TYPES}

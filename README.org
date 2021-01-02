@@ -26,10 +26,11 @@
   #+BEGIN_SRC lua
   bf.Collider.new()
   #+END_SRC 
-** query rectangle and circle area
+** query rectangle, circle, and PolygonArea
   #+BEGIN_SRC lua
   world:queryRectangleArea(x1, y1, x2, y2)
   #+END_SRC 
+  *NOTE* queryCircleArea and queryPolygonArea may not work for Edge or Chain colliders, or when the queried area is wholly inside the collider. I'm working on fixing this.
 ** love.physics.<object> methods mapped to breezefield objects
   #+BEGIN_SRC lua
   Collider:<methodname> (e.g. get/setRestitution, get/setX, etc...)
