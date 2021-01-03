@@ -38,6 +38,9 @@ function love.load()
    local aline = bf.Collider.new(world, 'edge', 100, 100, 120, 120, 150, 150)
    local edgeinpoly = world:queryRectangleArea(90, 90, 125, 125)
    assert(edgeinpoly[1] == aline and #edgeinpoly == 1)
+
+   local circleinlines = world:queryEdgeArea(300, 300, 350, 350)
+   assert(circleinlines[1] == ball and #circleinlines == 1)
    
    print('tests passed')
    love.event.quit()
