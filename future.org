@@ -5,8 +5,6 @@
 ** make it possible to use either love.physics or HC as a backend 
    (is this worth it?)
 *** implement some 'translation' of love.physics commands to HC and vice versa
-** add more shapes
-** world:newBlahBlahCollider to make switching from windfield to breezefield easier
 ** add features for filtering collisions
 *** idea 1: set which colliders to ignore/collide
 **** collider:setCollides(colliders)
