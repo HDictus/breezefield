@@ -24,13 +24,17 @@
 * functionality
 ** easily create physics objects (body + shape + fixture)
   #+BEGIN_SRC lua
-  bf.Collider.new()
+  world:newCollider(<shape_type>, <shape_args>, <table_to_use>(optional))
+  #+END_SRC
+  or
+  #+BEGIN_SRC lua
+  bf.Collider.new(<shape_type>, <shape_args>)
   #+END_SRC 
-** query rectangle, circle, and PolygonArea
+** query rectangle, circle, edge, or polygon areas
   #+BEGIN_SRC lua
   world:queryRectangleArea(x1, y1, x2, y2)
   #+END_SRC 
-  *NOTE* queryCircleArea and queryPolygonArea may not work for Edge or Chain colliders, or when the queried area is wholly inside the collider. I'm working on fixing this.
+
 ** love.physics.<object> methods mapped to breezefield objects
   #+BEGIN_SRC lua
   Collider:<methodname> (e.g. get/setRestitution, get/setX, etc...)
@@ -57,7 +61,6 @@
 * Installation
   I reccomend you ensure you understand love.physics, as breezefield mostly just wraps that. You can start [[https://love2d.org/wiki/Tutorial:Physics][here]]. 
   To install simply clone or download the repository and place breezefield anywhere in your lua path or in your project directory.
-  breezefield presently relies on [[https://github.com/davisdude/mlib][mlib]], so download that too and put it in your path as well (or inside breezefield)
 
 * example/tutorial
 ** Basics
@@ -156,7 +159,7 @@ function little_ball:draw(alpha)
 end
 #+END_SRC
 
-** query the world (supports rectangle, circle, and polygon)
+** query the world (supports rectangle, circle, polygon and edge)
 #+BEGIN_SRC lua
 function love.mousepressed()
    local x, y
@@ -181,7 +184,6 @@ little_ball.identity = little_ball
    for now, see:
    [[https://love2d.org/wiki/Contact:setEnabled]]
    [[https://love2d.org/wiki/Fixture:setFilterData]]
-
 
 
    
