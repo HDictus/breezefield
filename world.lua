@@ -176,7 +176,6 @@ function World:queryEdgeArea(...)
    return  query_region(self, 'Edge', vertices)
 end
 
-
 function World:update(dt)
    -- update physics world
    self._world:update(dt)
