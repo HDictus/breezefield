@@ -1,5 +1,6 @@
 -- a Collider object, wrapping shape, body, and fixtue
-local set_funcs, lp, lg, COLLIDER_TYPES = unpack(require("breezefield/utils"))
+local set_funcs, lp, lg, COLLIDER_TYPES = unpack(
+   require((...):gsub('collider', '') .. '/utils'))
 
 local Collider = {}
 Collider.__index = Collider
