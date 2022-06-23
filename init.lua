@@ -10,8 +10,8 @@
 local bf = {}
 
 
-local Collider = require('breezefield/collider')
-local World = require('breezefield/world')
+local Collider = require(... ..'/collider')
+local World = require(... ..'/world')
 
 
 function bf.newWorld(...)

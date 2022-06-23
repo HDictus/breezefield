@@ -9,8 +9,10 @@
 --]]
 -- TODO make updating work from here too
 -- TODO: update test and tutorial
-local Collider = require('breezefield/collider')
-local set_funcs, lp, lg, COLLIDER_TYPES = unpack(require("breezefield/utils"))
+local Collider = require((...):gsub('world', '') .. 'collider')
+local set_funcs, lp, lg, COLLIDER_TYPES = unpack(
+   require((...):gsub('world', '') .. '/utils'))
+
 
 
 local World = {}
