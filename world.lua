@@ -129,10 +129,21 @@ end
 local function query_region(world, coll_type, args)
    local collider = world:newCollider(coll_type, args)
    collider:setSensor(true)
+   world:_disable_callbacks()
    world:update(0)
    local colls = collider:collider_contacts(collider)
    collider:destroy()
+   world:_enable_callbacks()
    return colls
+end
+
+function World:_disable_callbacks()
+   self._callbacks = {self._world:getCallbacks()}
+   self._world:setCallbacks()
+end
+
+function World:_enable_callbacks()
+   self._world:setCallbacks(unpack(self._callbacks))
 end
 
 function World:queryPolygonArea(...)
