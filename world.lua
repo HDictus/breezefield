@@ -132,8 +132,8 @@ local function query_region(world, coll_type, args)
    world:_disable_callbacks()
    world:update(0)
    local colls = collider:collider_contacts(collider)
-   world:_enable_callbacks()
    collider:destroy()
+   world:_enable_callbacks()
    return colls
 end
 
@@ -143,7 +143,7 @@ function World:_disable_callbacks()
 end
 
 function World:_enable_callbacks()
-   self._world:setCallbacks()
+   self._world:setCallbacks(unpack(self._callbacks))
 end
 
 function World:queryPolygonArea(...)
