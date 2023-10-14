@@ -40,6 +40,26 @@
   Collider:<methodname> (e.g. get/setRestitution, get/setX, etc...)
   World:<methodname> (e.g. update)
   #+END_SRC 
+
+  So you can make a collider move rightwards with
+
+ #+BEGIN_SRC lua
+  collider:setLinearVelocity(100, 0)
+ #+END_SRC 
+
+** Collision handling
+   You can set collision events for a Collider by overwriting some methods:
+    - `:enter(other, collision) called on each collider when two colliders come into contact
+    - `:exit(other, collision) called on each collider when two colliders cease to be in contact
+    - `:preSolve(other, collision)` called on each collider before their collision(e.g. bounce) has been resolved
+    - `:postSolve(other, collision, normalimpulse, tangentimpulse)` called on each collider after their collision has been resolved
+
+   The collision argument to each will be the `love.physics.Contact` (https://love2d.org/wiki/Contact) object associated with the collision.
+   A handy trick to prevent colliders from colliding with each other is to do `collision:setEnabled(False)` inside the preSolve method.
+    You may notice that these correspond to the four callbacks in https://love2d.org/wiki/Tutorial:PhysicsCollisionCallbacks .
+   
+   If you wish to handle collisions differently, you can also just overwrite those callbacks with `world:setCallbacks`
+    
 ** draw physics objects with one command
   #+BEGIN_SRC lua
   world:draw()
