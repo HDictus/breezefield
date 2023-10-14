@@ -45,6 +45,12 @@ end
 
 
 function Collider:destroy()
+   for i, v in ipairs(self._world.colliders) do
+      if v == self then
+         table.remove(self._world.colliders, i)
+         break
+      end
+   end
    self._world.colliders[self] = nil
    self.fixture:setUserData(nil)
    self.fixture:destroy()
