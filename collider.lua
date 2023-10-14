@@ -30,6 +30,15 @@ function Collider:__draw__()
    love.graphics[self:draw_type()](unpack(args))
 end
 
+function Collider:setDrawOrder(num)
+   self._draw_order = num
+   self._world._draw_order_changed = true
+end
+
+function Collider:getDrawOrder()
+   return self._draw_order
+end
+
 function Collider:draw()
    self:__draw__()
 end

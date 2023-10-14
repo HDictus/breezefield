@@ -89,7 +89,13 @@ function World:draw(alpha, draw_over)
 		.draw method is overwritten
    --]]
    local color = {love.graphics.getColor()}
-   for _, c in pairs(self.colliders) do
+   if self._draw_order_changed then
+      table.sort(
+         self.colliders, 
+         function(a, b) print(a:getDrawOrder(), b:getDrawOrder())return a:getDrawOrder() < b:getDrawOrder() end)
+      self._draw_order_changed = false
+   end
+   for _, c in ipairs(self.colliders) do
       love.graphics.setColor(1, 1, 1, alpha or 1)
       c:draw(alpha)
       if draw_over then
@@ -243,7 +249,9 @@ function World:newCollider(collider_type, shape_arguments, table_to_use)
 
    -- index by self for now
    o._world = self
+   table.insert(self.colliders, o)
    self.colliders[o] = o
+   o:setDrawOrder(0)
    return o
 end
 
