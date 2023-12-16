@@ -80,6 +80,19 @@ function World:new(...)
    return w
 end
 
+function World:_remove(collider)
+   -- remove collider from table of tracked colliders (does NOT run proper destructors)
+   --[[
+      collider: collider to untrack
+   --]]
+   for i, col in ipairs(self.colliders) do
+      if col == collider then
+         table.remove(self.colliders, i)
+         break
+      end
+   end
+   self.colliders[collider] = nil
+end
 
 function World:draw(alpha, draw_over)
    -- draw the world
@@ -91,8 +104,9 @@ function World:draw(alpha, draw_over)
    local color = {love.graphics.getColor()}
    if self._draw_order_changed then
       table.sort(
-         self.colliders, 
-         function(a, b) print(a:getDrawOrder(), b:getDrawOrder())return a:getDrawOrder() < b:getDrawOrder() end)
+         self.colliders,
+         function(a, b) return a:getDrawOrder() < b:getDrawOrder() end
+	   )
       self._draw_order_changed = false
    end
    for _, c in ipairs(self.colliders) do
@@ -171,7 +185,7 @@ end
 function World:queryCircleArea(x, y, r)
    -- get all colliders in a circle are
    --[[
-      inputs: 
+      inputs:
         x, y, r: floats, x, y and radius of circle
       outputs:
         colls: table: colliders in area
@@ -209,7 +223,7 @@ create a new collider in this world
 
 args:
    collider_type (string): the type of the collider (not case seinsitive). any of:
-      circle, rectangle, polygon, edge, chain. 
+      circle, rectangle, polygon, edge, chain.
    shape_arguments (table): arguments required to instantiate shape.
       circle: {x, y, radius}
       rectangle: {x, y, width height}
@@ -217,7 +231,7 @@ args:
    table_to_use (optional, table): table to generate as the collider
 ]]--
 function World:newCollider(collider_type, shape_arguments, table_to_use)
-      
+
    local o = table_to_use or {}
    setmetatable(o, Collider)
    -- note that you will need to set static vs dynamic later
@@ -239,10 +253,10 @@ function World:newCollider(collider_type, shape_arguments, table_to_use)
    end
 
    o.collider_type = collider_type
-   
+
    o.fixture = lp.newFixture(o.body, o.shape, 1)
    o.fixture:setUserData(o)
-   
+
    set_funcs(o, o.body)
    set_funcs(o, o.shape)
    set_funcs(o, o.fixture)
