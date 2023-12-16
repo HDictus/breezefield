@@ -26,10 +26,6 @@
   #+BEGIN_SRC lua
   world:newCollider(<shape_type>, <shape_args>, <table_to_use>(optional))
   #+END_SRC
-  or
-  #+BEGIN_SRC lua
-  bf.Collider.new(<shape_type>, <shape_args>)
-  #+END_SRC 
 ** query rectangle, circle, edge, or polygon areas
   #+BEGIN_SRC lua
   world:queryRectangleArea(x1, y1, x2, y2)
