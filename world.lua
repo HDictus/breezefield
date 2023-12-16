@@ -126,14 +126,76 @@ local function check_vertices(vertices)
    end
 end
 
+local function is_edgy(colltype)
+   return colltype == COLLIDER_TYPES.POLY
+      or colltype == COLLIDER_TYPES.RECT
+      or colltype == COLLIDER_TYPES.EDGE
+      or colltype == COLLIDER_TYPES.CHAIN
+end
+
+local function any_intersections(coll1, coll2)
+   local vertices = {coll1:getSpatialIdentity()}
+   for i=1,#vertices-3,2 do
+      local x1, y1 = vertices[i], vertices[i+1]
+      local x2, y2 = vertices[i+2], vertices[i+3]
+      if (coll2:rayCast(x1, y1, x2, y2, 1) ~= nil)
+	 or coll2:testPoint(x1, y1)
+	 or coll2:testPoint(x2, y2)
+      then
+	 return true
+      end
+   end
+end
+
+local function poly_circle_intersect(poly, circle)
+   if any_intersections(poly, circle) then
+      return true
+   end
+   return poly:testPoint(circle:getPosition())
+      or circle:testPoint(poly:getMassData())
+end
+
+local function poly_poly_intersect(poly1, poly2)
+   return any_intersections(poly1, poly2)
+      or any_intersections(poly2, poly1)
+      or poly1:testPoint(poly2:getMassData()) -- poly2 in poly1
+      or poly2:testPoint(poly2:getMassData()) -- poly1 in poly2
+end
+
+local function are_touching(coll1, coll2)
+   if coll1.collider_type == COLLIDER_TYPES.CIRCLE and is_edgy(coll2.collider_type) then
+      return are_touching(coll2, coll1)
+   end
+   if is_edgy(coll1.collider_type) and coll2.collider_type == COLLIDER_TYPES.CIRCLE then
+      return poly_circle_intersect(coll1, coll2)
+   end
+   if is_edgy(coll1.collider_type) and is_edgy(coll2.collider_type) then
+      return poly_poly_intersect(coll1, coll2)
+   end
+   if coll1.collider_type == COLLIDER_TYPES.CIRCLE and coll2.collider_type == COLLIDER_TYPES.CIRCLE then
+      return ((coll1:getX() - coll2:getX())^2 + (coll1:getY() - coll2:getY())) <=
+	 coll1:getRadius() + coll2:getRadius()
+   end
+   error("collider types not recognized ".. tostring(coll1.collider_type)..', '..tostring(coll2.collider_type))
+end
+
 local function query_region(world, coll_type, args)
    local collider = world:newCollider(coll_type, args)
    collider:setSensor(true)
-   world:_disable_callbacks()
-   world:update(0)
-   local colls = collider:collider_contacts(collider)
+   local colls = {}
+   local function callback(fixture)
+      local coll = fixture:getUserData()
+      if coll ~= collider then
+	 if are_touching(collider, coll) then
+	    table.insert(colls, coll)
+	 end
+      end
+      return true
+   end
+   local ax, ay, bx, by = collider:getBoundingBox()
+   local in_bounding_box = world:queryBoundingBox(
+      ax, ay, bx, by, callback)
    collider:destroy()
-   world:_enable_callbacks()
    return colls
 end
 
@@ -159,7 +221,7 @@ function World:queryPolygonArea(...)
       vertices = vertices[1]
    end
    check_vertices(vertices)
-   return query_region(self, 'Polygon', vertices)
+   return query_region(self, COLLIDER_TYPES.POLYGON, vertices)
 end
 
 function World:queryCircleArea(x, y, r)
@@ -170,7 +232,7 @@ function World:queryCircleArea(x, y, r)
       outputs:
         colls: table: colliders in area
    ]]--
-   return query_region(self, 'Circle', {x, y, r})
+   return query_region(self, COLLIDER_TYPES.CIRCLE, {x, y, r})
 end
 
 function World:queryEdgeArea(...)
@@ -211,14 +273,13 @@ args:
    table_to_use (optional, table): table to generate as the collider
 ]]--
 function World:newCollider(collider_type, shape_arguments, table_to_use)
-      
    local o = table_to_use or {}
    setmetatable(o, Collider)
    -- note that you will need to set static vs dynamic later
    local _collider_type = COLLIDER_TYPES[collider_type:upper()]
    assert(_collider_type ~= nil, "unknown collider type: "..collider_type)
    collider_type = _collider_type
-   if collider_type == 'Circle' then
+   if collider_type == COLLIDER_TYPES.CIRCLE then
       local x, y, r = unpack(shape_arguments)
       o.body = lp.newBody(self._world, x, y, "dynamic")
       o.shape = lp.newCircleShape(r)
@@ -231,7 +292,7 @@ function World:newCollider(collider_type, shape_arguments, table_to_use)
       o.body = lp.newBody(self._world, 0, 0, "dynamic")
       o.shape = lp['new'..collider_type..'Shape'](unpack(shape_arguments))
    end
-
+   
    o.collider_type = collider_type
    
    o.fixture = lp.newFixture(o.body, o.shape, 1)
