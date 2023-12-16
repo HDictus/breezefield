@@ -80,6 +80,19 @@ function World:new(...)
    return w
 end
 
+function World:_remove(collider)
+   -- remove collider from table of tracked colliders (does NOT run proper destructors)
+   --[[
+      collider: collider to untrack
+   --]]
+   for i, col in ipairs(self.colliders) do
+      if col == collider then
+         table.remove(self.colliders, i)
+         break
+      end
+   end
+   self.colliders[collider] = nil
+end
 
 function World:draw(alpha, draw_over)
    -- draw the world
