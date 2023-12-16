@@ -193,7 +193,6 @@ local function query_region(world, coll_type, args)
       return true
    end
    local ax, ay, bx, by = collider:getBoundingBox()
-   bbax, bbay, bbx, bby = ax, ay, bx, by
    local in_bounding_box = world:queryBoundingBox(
       ax, ay, bx, by, callback)
    collider:destroy()

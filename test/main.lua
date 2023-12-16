@@ -75,9 +75,6 @@ function love.draw()
       love.graphics.setColor(0.5, 1, 0.5, 0.9)
       love.graphics.circle('line', unpack(printcircle))
    end
-   if bbax then
-      love.graphics.polygon('line', bbax, bbay, bbax, bby, bbx, bby, bbx, bbay)
-   end
 end
 
 -- TODO demonstrate collisionn handling
