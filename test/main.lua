@@ -12,6 +12,7 @@ end
 -- TODO split into multiple test scripts
 function love.load()
    world = bf.newWorld(0, 90.81, true)
+   
    ground = bf.Collider.new(world,
 			    "rect", 325, 600, 650, 100)
 
@@ -68,16 +69,20 @@ end
 
 
 function love.draw()
+   love.graphics.setColor(1, 1, 1)
    world:draw()
+   if printcircle then
+      love.graphics.setColor(0.5, 1, 0.5, 0.9)
+      love.graphics.circle('line', unpack(printcircle))
+   end
 end
 
 -- TODO demonstrate collisionn handling
 -- TODO demonstrate collision classes
-function love.mousepressed()
-   local x, y
+function love.mousepressed(x, y, button)
    local radius = 30
-   x, y = love.mouse.getPosition()
    local colls = world:queryCircleArea(x, y, radius)
+   printcircle = {x, y, radius}
    for _, collider in ipairs(colls) do
       if collider.identity == little_ball then
 	 local dx = love.mouse.getX() - collider:getX()

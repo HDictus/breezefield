@@ -8,7 +8,7 @@ Collider.__index = Collider
 
 
 function Collider.new(world, collider_type, ...)
-   -- deprecated
+   print("Collider.new is deprecated and may be removed in a later version. use world:newCollider instead")
    return world:newCollider(collider_type, {...})
 end
 
