@@ -205,5 +205,5 @@ little_ball.identity = little_ball
    
 * links
 ** forum
-   [[forum][https://love2d.org/forums/viewtopic.php?f=5&t=86113&p=224718#p224718]]
+   [[https://love2d.org/forums/viewtopic.php?f=5&t=86113&p=224718#p224718][forum]]
    
