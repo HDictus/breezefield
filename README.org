@@ -60,12 +60,17 @@
   #+BEGIN_SRC lua
   world:draw()
   #+END_SRC 
+
 *** can be repurposed to draw in-game shapes/sprites!
   Just redefine :draw on your collider objects, 
   add other objects with :draw methods to world.colliders.
   # TODO rename world.colliders to world.to_draw?
   Call world:draw(<alpha>, true) to draw physics boundaries in addition to
   self-defined :draw methods
+  
+  You can ensure some colliders are drawn over others with `Collider:setDrawOrder(number)`.
+  Colliders with higher draw orders will be drawn over those with smaller draw orders.
+  The default is 0, and the draw order can be negative.
 ** access to love.physics objects if you have something more creative in mind
    World._physworld contains the regular love.physics.world object.
    Collider.fixture, Collider.body, Collider.shape all contain the 
