@@ -45,7 +45,7 @@ end
 
 
 function Collider:destroy()
-   self._world.colliders[self] = nil
+   self._world:_remove(self)
    self.fixture:setUserData(nil)
    self.fixture:destroy()
    self.body:destroy()
