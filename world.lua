@@ -293,6 +293,15 @@ args:
    table_to_use (optional, table): table to generate as the collider
 ]]--
 function World:newCollider(collider_type, shape_arguments, table_to_use)
+   if type(collider_type) ~= 'string' then
+      if type(self) == 'string' then
+	 error("World:newCollider not called correctly. "..
+	       "You have probably tried to do world.newCollider(...) instead of world:newCollider(...). "..
+	       "The colon notation is equivalent to world.newCollider(world, ...)"
+	 )
+      end
+      error("The first argument of world:newCollider must be a string designating the collider type.")
+   end
    local o = table_to_use or {}
    setmetatable(o, Collider)
    -- note that you will need to set static vs dynamic later
