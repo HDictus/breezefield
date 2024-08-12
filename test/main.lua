@@ -3,6 +3,9 @@ for n, v in pairs(_G) do
    pre_globals[n] = v
 end
 
+local mystr = "Astring"
+print(mystr:upper())
+
 bf = require("breezefield")
 
 for n, v in pairs(_G) do
@@ -13,26 +16,24 @@ end
 function love.load()
    world = bf.newWorld(0, 90.81, true)
    
-   ground = bf.Collider.new(world,
-			    "rect", 325, 600, 650, 100)
+   ground = world:newCollider("rect", {325, 600, 650, 100})
 
    ground:setType("static")
    print(ground.collider_type)
 
-   ball = bf.Collider.new(world, "Circle", 325, 325, 20)
+   ball = world:newCollider("Circle", {325, 325, 20})
 
    ball:setRestitution(0.8)
-   block1 = bf.Collider.new(world, "Polygon", {150, 375, 250, 375,
-					       250, 425, 150, 425})
+   block1 = world:newCollider("Polygon", {150, 375, 250, 375, 250, 425, 150, 425})
    little_ball.new(
       love.math.random(love.graphics.getWidth()), 0)
 
-   tri = bf.Collider.new(world, "Polygon", {400, 400, 450, 400, 425, 356.7})
+   tri = world:newCollider("Polygon", {400, 400, 450, 400, 425, 356.7})
 
-   edge = bf.Collider.new(world, 'Edge', 500, 300, 500, 500)
+   edge = world:newCollider('Edge', {500, 300, 500, 500})
    edge:setType('static')
 
-   chain = bf.Collider.new(world, 'Chain', false, 100, 100, 110, 110, 115, 110, 120, 115, 120, 125, 130, 130)
+   chain = world:newCollider('Chain', {false, 100, 100, 110, 110, 115, 110, 120, 115, 120, 125, 130, 130})
 
 
    function ball:postSolve(other)
@@ -103,7 +104,7 @@ function spawn_random_ball()
 end
 
 function little_ball.new(x, y)
-   local n = bf.Collider.new(world, 'Circle', x, y, 5)
+   local n = world:newCollider('Circle', {x, y, 5})
    setmetatable(n, little_ball)
    return n
 end
