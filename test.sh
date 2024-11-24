@@ -15,3 +15,7 @@ love test/test_rendering
 mkdir test/test_queryareas/breezefield
 cp * test/test_queryareas/breezefield
 love test/test_queryareas
+
+mkdir test/test_collisionclass/breezefield
+cp * test/test_collisionclass/breezefield
+love test/test_collisionclass

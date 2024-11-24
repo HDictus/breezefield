@@ -79,6 +79,42 @@
     if there are any issues in breezefields implementation that complicates using
     love.physics together with it, let me know, or better yet, send a pull request
 
+** Collision classes
+
+Collision classes allow you to set filters to colliders.
+Collision classes in breezefield is just like windfield.
+If you want to the collider A ignores collider B (or collider B ignores collider A), you would do:
+
+#+BEGIN_SRC lua
+local bf = require "breezefield"
+
+local world = bf.newWorld(0, 100)
+
+-- creating collision classes --
+world:addCollisionClass("ColliderB")
+world:addCollisionClass("ColliderA", {
+   ignores = {"ColliderB"},
+})
+
+-- creating colliders
+local colliderA = world:newCollider("Rectangle", {100, 100, 32, 32})
+local colliderB = world:newCollider("Rectangle", {120, 100, 32, 32})
+
+-- adding to colliders --
+colliderA:setCollisionClass("ColliderA")
+colliderB:setCollisionClass("ColliderB")
+
+function love.update(dt)
+   world:update(dt)
+end
+
+function love.draw()
+   world:draw()
+end
+#+END_SRC
+
+See the folder tests/test_collisionclass for deep undestanding.
+
 * Installation
   I reccomend you ensure you understand love.physics, as breezefield mostly just wraps that. You can start [[https://love2d.org/wiki/Tutorial:Physics][here]]. 
   To install simply clone or download the repository and place breezefield anywhere in your lua path or in your project directory.
@@ -95,14 +131,14 @@ function love.load()
    -- any function of love.physics.world should work on World
    print(world:getGravity())
 
-   ground = bf.Collider.new(world, "Polygon",
+   ground = world:newCollider("Polygon",
 				    {0, 550, 650, 550 , 650, 650, 0, 650})
    ground:setType("static")
 
-   ball = bf.Collider.new(world, "Circle", 325, 325, 20)
+   ball = world:newCollider("Circle", 325, 325, 20)
    
    ball:setRestitution(0.8) -- any function of shape/body/fixture works
-   block1 = bf.Collider.new(world, "Polygon", {150, 375, 250, 375,
+   block1 = world:newCollider("Polygon", {150, 375, 250, 375,
 					       250, 425, 150, 425})
 
 end
@@ -148,7 +184,7 @@ function spawn_random_ball()
 end
 
 function little_ball.new(x, y)
-   local n = bf.Collider.new(world, 'Circle', x, y, 5)
+   local n = world:newCollider('Circle', x, y, 5)
    setmetatable(n, little_ball)
    return n
 end
@@ -201,13 +237,7 @@ and after little_ball's declaration
 #+BEGIN_SRC lua
 little_ball.identity = little_ball
 #+END_SRC
-** TODO define some form of collision filtering
-   for now, see:
-   [[https://love2d.org/wiki/Contact:setEnabled]]
-   [[https://love2d.org/wiki/Fixture:setFilterData]]
 
-
-   
 * links
 ** forum
    [[https://love2d.org/forums/viewtopic.php?f=5&t=86113&p=224718#p224718][forum]]

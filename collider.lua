@@ -75,4 +75,58 @@ function Collider:collider_contacts()
    return colliders
 end
 
+--- Sets a collision class to the collider.
+---@param name string
+function Collider:setCollisionClass(name)
+   local cls = self._world.collision_classes[name]
+
+   assert(cls, "collision class '" .. tostring(name) .. "' does not exist")
+
+   local cls_id = cls.id
+   local cls_info = cls.info
+
+   self.fixture:setCategory(cls_id)
+
+   -- classes to be not inserted
+   local doesnot_insert = {}
+
+   if cls_info.except then
+      for i=1, #cls_info.except do
+         doesnot_insert[cls_info.except[i]] = true
+      end
+   end
+
+   local to_ignore = {}
+   if cls_info.ignores then
+      -- if it's All then expand to every collision class that exist
+      if cls_info.ignores == "All" then
+         cls_info.ignores = {}
+         for cls_name in pairs(self._world.collision_classes) do
+            if cls_name ~= name  then
+               cls_info.ignores[#cls_info.ignores+1] = cls_name
+            end
+         end
+      end
+
+      for i=1, #cls_info.ignores do
+         local ignore_cls = cls_info.ignores[i]
+
+         if not doesnot_insert[ignore_cls] then
+            local id = self._world.collision_classes[ignore_cls].id
+
+            table.insert(to_ignore, id)
+         end
+      end
+   end
+
+   self.collision_class = name
+
+   self.fixture:setMask(unpack(to_ignore))
+end
+
+-- returns the collision class of the object
+function Collider:getClass()
+   return self.collision_class
+end
+
 return Collider

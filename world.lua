@@ -35,6 +35,12 @@ function World:new(...)
    w.update = nil -- to use our custom update
    w.colliders = {}
 
+
+   w.collision_classes = {}
+
+   -- starts at 1 and go to 16
+   w._classes_id = 1
+
    -- some functions defined here to use w without being passed it
 
    function w.collide(obja, objb, coll_type, ...)
@@ -328,6 +334,21 @@ function World:newCollider(collider_type, shape_arguments, table_to_use)
    self.colliders[o] = o
    o:setDrawOrder(0)
    return o
+end
+
+--- Adds a collision class to the world
+---@param name string
+---@param info { ignores: {integer: string} | "All", except?: {integer: string}}
+function World:addCollisionClass(name, info)
+   assert(type(name) == "string", "invalid collision class name")
+   assert(self._classes_id <= 16, "limit of collision classes was exceeded")
+
+   self.collision_classes[name] = {
+      info = info or {},
+      id = self._classes_id
+   }
+
+   self._classes_id = self._classes_id + 1
 end
 
 return World
